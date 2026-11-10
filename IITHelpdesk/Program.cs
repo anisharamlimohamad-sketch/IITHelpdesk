@@ -20,10 +20,9 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-app.MapControllerRoute(
+    app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Helpdesk}/{action=UserPortal}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=UserPortal}/{action=UserPortal}/{id?}");
 
 
 app.Run();

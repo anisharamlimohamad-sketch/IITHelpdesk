@@ -1,0 +1,419 @@
+﻿@model ItHelpdesk.Models.IncidentReportViewModel
+
+@{
+    ViewData["Title"] = "Ticket details";
+    Layout = null;
+    var status = Model.Status ?? "New";
+
+    bool isNewActive = status == "New";
+    bool isAssignedActive = status == "Assigned";
+    bool isInProgressActive = status == "In progress" || status == "In Progress";
+    bool isResolvedActive = status == "Resolved" || status == "Closed";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ticket details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" />
+    <style>
+        body { background: #f3f4f9; font-family: 'Plus Jakarta Sans', sans-serif; color: #1e293b; }
+        .top-navbar { background: #1e1b4b; color: #fff; padding: 14px 24px; }
+        
+        .dashboard-card { 
+            background: #ffffff; 
+            border-radius: 16px; 
+            border: 1px solid #e2e8f0; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
+            padding: 0; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+            overflow: hidden;
+        }
+        
+        .card-body-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .info-item { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 10px; padding: 10px 12px; }
+        .progress-step { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; display: inline-block; position: relative; z-index: 2; }
+        .progress-step.active { background: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+        .progress-line-bar { position: absolute; top: 50%; left: 8%; right: 8%; height: 2px; background: #e2e8f0; transform: translateY(-50%); z-index: 1; }
+        .badge-counter { background: #f1f5f9; color: #475569; font-weight: 600; font-size: 11px; padding: 3px 8px; border-radius: 20px; }
+        
+        /* WhatsApp Chat Background & Bubbles */
+        .whatsapp-bg {
+            background-color: #efeae2;
+            background-image: radial-gradient(#d4ded6 0.75px, transparent 0.75px);
+            background-size: 15px 15px;
+        }
+        .chat-scroll-container, .action-scroll-container {
+            flex-grow: 1;
+            min-height: 280px;
+            max-height: 480px;
+            overflow-y: auto;
+        }
+        .whatsapp-bubble-admin {
+            background-color: #dcf8c6;
+            color: #111;
+            border-radius: 8px 0 8px 8px;
+            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+        }
+        .whatsapp-bubble-user {
+            background-color: #ffffff;
+            color: #111;
+            border-radius: 0 8px 8px 8px;
+            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <div class="top-navbar d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-ticket fs-5"></i>
+            <span class="fw-bold fs-5">Ticket details</span>
+        </div>
+        <a href="@Url.Action("AdminDashboard", "AdminDashboard")" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold" style="font-size: 13px;">
+            ← Back to dashboard
+        </a>
+    </div>
+
+    <!-- MAIN 3-COLUMN CONTAINER -->
+    <div class="container-fluid p-4">
+        <div class="row g-3 align-items-stretch">
+            
+            <!-- ================= COLUM 1: TICKET DETAILS ================= -->
+            <div class="col-lg-4 d-flex">
+                <div class="dashboard-card w-100">
+                    
+                    <!-- Header-->
+                    <div class="p-4 text-white" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h2 class="fw-bold mb-1 text-white" style="font-size: 1.8rem;">#@Model.Id</h2>
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <span class="rounded-circle bg-white text-primary d-inline-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 26px; height: 26px; font-size: 10px;">
+                                        @(string.IsNullOrEmpty(Model.EmployeeId) ? "MO" : Model.EmployeeId.Substring(0, 2).ToUpper())
+                                    </span>
+                                    <span class="text-white-50 small">Raised by <strong class="text-white">@Model.EmployeeId</strong></span>
+                                </div>
+                            </div>
+                            <span class="badge bg-white text-primary px-3 py-2 rounded-pill fw-semibold shadow-sm" style="font-size: 11px;">
+                                <i class="fa-solid fa-circle me-1 text-primary" style="font-size: 6px;"></i> @status
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="card-body-content">
+                        
+                        <!-- Progress Tracker Bar -->
+                        <div class="position-relative px-2 py-2 mb-3 bg-light rounded-3">
+                            <div class="progress-line-bar" style="top: 40%;"></div>
+                            <div class="row text-center position-relative">
+                                <div class="col-3">
+                                    <div class="progress-step @(isNewActive || isAssignedActive || isInProgressActive || isResolvedActive ? "active" : "")"></div>
+                                    <div class="mt-1 text-muted fw-semibold" style="font-size: 9px;">New</div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="progress-step @(isAssignedActive || isInProgressActive || isResolvedActive ? "active" : "")"></div>
+                                    <div class="mt-1 text-muted" style="font-size: 9px;">Assigned</div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="progress-step @(isInProgressActive || isResolvedActive ? "active" : "")"></div>
+                                    <div class="mt-1 text-muted" style="font-size: 9px;">In progress</div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="progress-step @(isResolvedActive ? "active" : "")"></div>
+                                    <div class="mt-1 text-muted" style="font-size: 9px;">Resolved</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Update -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="info-item">
+                                    <span class="text-muted d-block" style="font-size: 9px;">Asset</span>
+                                    <strong class="text-dark" style="font-size: 12px;">@Model.AssetName</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="info-item">
+                                    <span class="text-muted d-block" style="font-size: 9px;">Category</span>
+                                    <strong class="text-dark" style="font-size: 12px;">@Model.Category</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="info-item">
+                                    <span class="text-muted d-block" style="font-size: 9px;">Department</span>
+                                    <strong class="text-dark" style="font-size: 12px;">@Model.Department</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="info-item">
+                                    <span class="text-muted d-block" style="font-size: 9px;">Location (section, area)</span>
+                                    <strong class="text-dark" style="font-size: 11px;">@Model.Section · @Model.Area</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Problem Description -->
+                        <div class="mb-3 flex-grow-1">
+                            <label class="text-muted fw-semibold mb-1 d-flex align-items-center gap-1" style="font-size: 11px;">
+                                <i class="fa-solid fa-triangle-exclamation text-warning"></i> Problem description
+                            </label>
+                            <div class="p-3 bg-light rounded-3 text-dark d-flex flex-column justify-content-between" style="min-height: 140px; font-size: 15px; font-weight: 600; border-left: 4px solid #2563eb !important;">
+                                <div>@Model.ProblemDescription</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= COLUM 2: CHAT HISTORY ================= -->
+            <div class="col-lg-4 d-flex">
+                <div class="dashboard-card w-100">
+                    <div class="card-body-content" style="padding-bottom: 12px;">
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-2"><i class="fa-solid fa-comments"></i></div>
+                                <div>
+                                    <span class="fw-bold text-dark d-block" style="font-size: 14px;">Chat history</span>
+                                    <span class="text-muted" style="font-size: 11px;">Employee @Model.EmployeeId · @Model.AssetName</span>
+                                </div>
+                            </div>
+                            <span class="badge-counter">@(string.IsNullOrEmpty(Model.UserReply) ? 0 : Model.UserReply.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Length)</span>
+                        </div>
+
+                        <!-- Messages Container (WhatsApp Style) -->
+                        <div id="chatBodyContainer" class="p-3 whatsapp-bg rounded-3 mb-3 chat-scroll-container border">
+                            @if (string.IsNullOrWhiteSpace(Model.UserReply))
+                            {
+                                <div id="noMessagesPlaceholder" class="h-100 d-flex flex-column justify-content-center align-items-center text-center">
+                                    <div class="bg-white p-4 rounded-4 shadow-sm border" style="width: 260px;">
+                                        <div class="text-primary mb-2 fs-4"><i class="fa-regular fa-comment-dots"></i></div>
+                                        <strong class="text-dark d-block mb-1" style="font-size: 13px;">No messages yet</strong>
+                                        <span class="text-muted" style="font-size: 11px;">Say hello to start the conversation.</span>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center my-2">
+                                    <span class="badge bg-white text-muted border px-3 py-1 shadow-sm rounded-pill" style="font-size: 10px;">Today, @DateTime.Now.ToString("d MMM yyyy")</span>
+                                </div>
+                                
+                                var messages = Model.UserReply.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                                foreach (var msg in messages)
+                                {
+                                    bool isAdmin = msg.StartsWith("[Admin");
+                                    string cleanMsg = msg;
+                                    string timeOnly = DateTime.Now.ToString("HH:mm");
+
+                                    int bracketIndex = msg.IndexOf("] ");
+                                    if (bracketIndex != -1 && msg.StartsWith("["))
+                                    {
+                                        string headerPart = msg.Substring(1, bracketIndex - 1);
+                                        if (headerPart.Contains(" "))
+                                        {
+                                            var parts = headerPart.Split(' ');
+                                            if (parts.Length > 1) { timeOnly = parts[parts.Length - 1]; }
+                                        }
+                                        cleanMsg = msg.Substring(bracketIndex + 2);
+                                    }
+
+                                    <div class="d-flex @(isAdmin ? "justify-content-end" : "justify-content-start") mb-2">
+                                        <div class="p-2 px-3 shadow-sm @(isAdmin ? "whatsapp-bubble-admin" : "whatsapp-bubble-user")" style="max-width: 80%; font-size: 0.85rem;">
+                                            <div class="text-dark text-break">@cleanMsg</div>
+                                            <div class="text-end text-muted mt-1" style="font-size: 0.65rem;">
+                                                @timeOnly @if(isAdmin){<i class="fa-solid fa-check-double text-primary ms-1" style="font-size: 0.6rem;"></i>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <!-- Chat Input Form -->
+                        <form onsubmit="sendAdminMessage(event, '@Model.Id')" class="d-flex align-items-center gap-2 mt-auto">
+                            <input type="text" id="chatCommentInput" placeholder="Type a message" class="form-control rounded-pill px-3 py-2 bg-light border" style="font-size: 0.85rem;" required autocomplete="off" />
+                            <button type="submit" class="btn btn-success rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px; background-color: #25d366; border: none; flex-shrink: 0;">
+                                <i class="fa-solid fa-paper-plane text-white" style="font-size: 12px;"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= COLUM 3: ACTION LOG ================= -->
+            <div class="col-lg-4 d-flex">
+                <div class="dashboard-card w-100">
+                    <div class="card-body-content">
+                        
+                        <!-- Header Action Log -->
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-2"><i class="fa-solid fa-clipboard-list"></i></div>
+                                <div>
+                                    <span class="fw-bold text-dark d-block" style="font-size: 14px;">Action log</span>
+                                    <span class="text-muted" style="font-size: 11px;">Internal staff record</span>
+                                </div>
+                            </div>
+                            <span class="badge-counter">@(Model.ActionLogs?.Count ?? 0)</span>
+                        </div>
+
+                        <!-- Action Log History List -->
+                        <div id="actionLogContainer" class="p-2 bg-light rounded-3 mb-3 action-scroll-container position-relative">
+                            @if (Model.ActionLogs != null && Model.ActionLogs.Any())
+                            {
+                                <!-- Garisan menegak timeline di background -->
+                                <div style="position: absolute; left: 27px; top: 15px; bottom: 15px; width: 2px; background-color: #cbd5e1; z-index: 1;"></div>
+
+                                foreach (var log in Model.ActionLogs.OrderBy(l => l.Timestamp))
+                                {
+                                    string initials = "ST";
+                                    if (!string.IsNullOrWhiteSpace(log.StaffName))
+                                    {
+                                        var cleanName = log.StaffName.Trim();
+                                        initials = cleanName.Length >= 2 ? cleanName.Substring(0, 2).ToUpper() : cleanName.ToUpper();
+                                    }
+
+                                    <div class="d-flex align-items-start gap-2 mb-3 position-relative" style="z-index: 2;">
+                                        <!-- Avatar Bulatan Inisial Staf -->
+                                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm" style="width: 32px; height: 32px; font-size: 11px; border: 2px solid #fff;">
+                                            @initials
+                                        </div>
+
+                                        <!-- Log Entry Form -->
+                                        <div class="bg-white p-3 rounded-3 shadow-sm border flex-grow-1" style="font-size: 12px;">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="text-dark">Assigned to <strong class="text-primary">@log.StaffName</strong></span>
+                                                <span class="text-muted" style="font-size: 10px;">@log.Timestamp.ToString("yyyy-MM-dd HH:mm")</span>
+                                            </div>
+                                            <div class="text-dark text-break" style="white-space: pre-wrap;">@log.Notes</div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center text-muted my-4" style="font-size: 12px;">
+                                    No action logs recorded yet.
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Add Log Entry Form -->
+                        <form asp-controller="AdminDashboard" asp-action="AddActionLog" method="post" class="mt-auto">
+                            <input type="hidden" name="incidentId" value="@Model.Id" />
+                            
+                            <div class="fw-bold text-dark mb-2" style="font-size: 13px;">Add log entry</div>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <label class="form-label text-muted mb-1" style="font-size: 11px;">Timestamp</label>
+                                    <input type="text" class="form-control form-control-sm bg-light text-muted" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" disabled />
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-bold mb-1" style="font-size: 11px;">Assigned to</label>
+                                    <input type="text" name="staffName" class="form-control form-control-sm" placeholder="e.g. Ahmad / Support Tech" required />
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold mb-1" style="font-size: 11px;">Action taken</label>
+                                <textarea name="notes" class="form-control form-control-sm" rows="3" placeholder="Describe the technical steps taken&#10;1 - ...&#10;2 - ..." required style="resize: vertical;"></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center text-muted mb-2" style="font-size: 10px;">
+                                <span>Drag the corner to make it bigger</span>
+                                <span>Ctrl + Enter to add</span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold py-2 shadow-sm rounded-pill" style="background-color: #2563eb; font-size: 13px;">
+                                Add to log
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function sendAdminMessage(event, ticketId) {
+        event.preventDefault();
+
+        const inputField = document.getElementById('chatCommentInput');
+        const commentText = inputField.value.trim();
+        if (!commentText) return;
+
+        const formData = new FormData();
+        formData.append('id', ticketId);
+        formData.append('comments', commentText);
+        formData.append('status', '@Model.Status');
+
+        fetch('@Url.Action("UpdateIncidentStatus", "AdminDashboard")', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                const chatBody = document.getElementById('chatBodyContainer');
+                const placeholder = document.getElementById('noMessagesPlaceholder');
+                if (placeholder) { 
+                    chatBody.innerHTML = `
+                        <div class="text-center my-2">
+                            <span class="badge bg-white text-muted border px-3 py-1 shadow-sm rounded-pill" style="font-size: 10px;">
+                                Today, ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </span>
+                        </div>
+                    `; 
+                }
+
+                const now = new Date();
+                const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+                const newMsgHtml = `
+                    <div class="d-flex justify-content-end mb-2">
+                        <div class="p-2 px-3 shadow-sm whatsapp-bubble-admin" style="max-width: 80%; font-size: 0.85rem;">
+                            <div class="text-dark text-break">${commentText}</div>
+                            <div class="text-end text-muted mt-1" style="font-size: 0.65rem;">
+                                ${timeStr} <i class="fa-solid fa-check-double text-primary ms-1" style="font-size: 0.6rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                chatBody.insertAdjacentHTML('beforeend', newMsgHtml);
+                inputField.value = '';
+                chatBody.scrollTop = chatBody.scrollHeight;
+            } else {
+                alert("Failed to send message.");
+            }
+        })
+        .catch(error => { console.error('Error:', error); });
+    }
+
+    // Auto-scroll action log & chat ke bahagian paling bawah semasa halaman dimuatkan
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const chatBody = document.getElementById('chatBodyContainer');
+        if (chatBody) {
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        const actionContainer = document.querySelector('.action-scroll-container');
+        if (actionContainer) {
+            actionContainer.scrollTop = actionContainer.scrollHeight;
+        }
+    });
+    </script>
+</body>
+</html>

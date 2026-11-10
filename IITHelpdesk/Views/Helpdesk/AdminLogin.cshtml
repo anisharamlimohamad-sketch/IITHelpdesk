@@ -1,0 +1,306 @@
+﻿@{
+    ViewData["Title"] = "Admin Login - MIS Helpdesk";
+    Layout = null; // Disables the default layout to remove any unwanted navbar/footer
+}
+
+<!-- FontAwesome Icons CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Bootstrap CSS CDN -->
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+<style>
+    body {
+        background-color: #f1f5f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #334155;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    /* Hero Banner Header with modern background waves */
+    .hero-section {
+        background: linear-gradient(135deg, #252478 0%, #1e1b4b 100%);
+        color: white;
+        padding: 30px 0 110px 0;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Decorative background shapes mimicking your design */
+    .hero-section::before {
+        content: "";
+        position: absolute;
+        top: -50px;
+        left: -50px;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .hero-section::after {
+        content: "";
+        position: absolute;
+        bottom: -100px;
+        right: -50px;
+        width: 400px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .hero-container {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 0 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .header-logo-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* User Portal Pill Button */
+    .btn-portal-back {
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        color: white !important;
+        border-radius: 50px !important;
+        padding: 9px 24px !important;
+        font-size: 0.9rem !important;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        display: inline-flex !important;
+        align-items: center;
+    }
+
+    .btn-portal-back:hover {
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+    }
+
+    /* Centering Wrapper for the Form Card */
+    .main-content-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 20px 40px 20px;
+        margin-top: -75px; 
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Icon Box Custom Styling */
+    .icon-box {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .icon-blue { 
+        background-color: #e0e7ff; 
+        color: #4f46e5; }
+
+    /* Form Card Container */
+    .form-container {
+        background: white;
+        border-radius: 28px;
+        padding: 45px 50px 35px 50px;
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 500px;
+    }
+
+    /* Custom Input Styling with Inner Icons */
+    .input-group-custom {
+        position: relative;
+    }
+
+    .input-group-custom .input-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1.05rem;
+        z-index: 5;
+        pointer-events: none;
+    }
+
+    /* Password Toggle Eye Icon Button */
+    .password-toggle-icon {
+        position: absolute;
+        right: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1.05rem;
+        cursor: pointer;
+        z-index: 5;
+        background: none;
+        border: none;
+    }
+
+    .password-toggle-icon:hover {
+        color: #4f46e5;
+    }
+
+    .form-control-custom {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 13px 48px 13px 48px;
+        font-size: 0.95rem;
+        color: #334155;
+        transition: all 0.2s ease;
+    }
+
+    .form-control-custom:focus {
+        background-color: #ffffff;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    /* Submit Button with Gradient Shadow */
+    .btn-submit-purple {
+        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+        color: white;
+        border-radius: 50px;
+        padding: 13px 30px;
+        font-weight: 600;
+        border: none;
+        box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+        transition: all 0.2s ease;
+    }
+
+    .btn-submit-purple:hover {
+        background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 12px 22px -5px rgba(79, 70, 229, 0.5);
+    }
+</style>
+
+    <!-- ========================================== -->
+    <!--------------- HEADER/TOP BAR ----------------->
+    <!-- ========================================== -->
+
+    <div class="hero-section">
+        <div class="hero-container">
+        <div class="d-flex align-items-center gap-3">
+            <div class="header-logo-box">
+                <i class="fa-solid fa-headset fa-lg text-white"></i>
+            </div>
+            <h2 class="fw-bold mb-0 text-white">MIS Helpdesk</h2>
+        </div>
+            <a asp-controller="UserPortal" asp-action="UserPortal" class="btn-portal-back">
+            <i class="fa-solid fa-arrow-left me-2"></i>User Portal
+        </a>
+       </div>
+   </div>
+
+    <div class="main-content-wrapper">
+        <div class="form-container border-0">
+        
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div class="icon-box icon-blue mb-0">
+               <i class="fa-solid fa-lock"></i>
+           </div>
+          <div>
+              <h3 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px;">Admin Login</h3>
+              <p class="text-muted small mb-0">Manage tickets & requests</p>
+        </div>
+     </div>
+
+        <!-- Error Alert Message -->
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-danger py-2 rounded-3 small mb-4 text-start">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i> @ViewBag.ErrorMessage
+            </div>
+        }
+
+    <!-- ========================================== -->
+    <!-------------- ADMIN LOGIN FORM ---------------->
+    <!-- ========================================== -->
+
+        <form asp-controller="AdminLogin" asp-action="Authenticate" method="post" class="text-start">
+            
+            <!-- Username Input Field -->
+            <div class="mb-3">
+                <label class="form-label small fw-semibold text-secondary">Username</label>
+                <div class="input-group-custom">
+                    <span class="input-icon"><i class="fa-solid fa-user"></i></span>
+                    <input type="text" name="username" class="form-control form-control-custom w-100" placeholder="Enter username" required />
+                </div>
+            </div>
+
+            <!-- Password Input Field with Toggle Visibility -->
+            <div class="mb-4">
+                <label class="form-label small fw-semibold text-secondary">Password</label>
+                <div class="input-group-custom">
+                    <span class="input-icon"><i class="fa-solid fa-key"></i></span>
+                    <input type="password" id="passwordField" name="password" class="form-control form-control-custom w-100" placeholder="Enter password" required />
+                    <button type="button" class="password-toggle-icon" id="togglePassword" onclick="togglePasswordVisibility()">
+                        <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Log In Submit Button -->
+            <button type="submit" class="btn btn-submit-purple w-100 shadow-sm py-3 mb-4">
+                <i class="fa-solid fa-right-to-bracket me-2"></i> Log In to Dashboard
+            </button>
+
+        </form>
+
+        <!-- Divider Line & Security Footer Note -->
+        <hr class="text-muted opacity-25 mb-3" />
+        <div class="text-center text-muted small">
+            <i class="fa-solid fa-shield-halved me-1"></i> Authorized MIS staff only
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!----------------- JAVASCRIPT ------------------->
+    <!-- ========================================== -->
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById("passwordField");
+            const eyeIcon = document.getElementById("eyeIcon");
+        
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        }
+    </script>

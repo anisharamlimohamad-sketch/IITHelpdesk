@@ -2,8 +2,39 @@
 @{
     ViewData["Title"] = "Admin Dashboard";
     Layout = null;
-}
 
+    bool IsUrgent(string c) => c == "SATO Case" || c == "VIP Case";
+    bool IsDone(string s) => s == "Resolved" || s == "Closed";
+
+    var sortedIncidents = Model.Incidents != null
+        ? Model.Incidents.OrderByDescending(i => IsUrgent(i.Category ?? ""))
+                         .ThenByDescending(i => (i.Status ?? "New") == "New")
+                         .ThenByDescending(i => i.Id)
+                         .ToList()
+        : new List<ItHelpdesk.Models.IncidentReportViewModel>();
+
+    var urgentOpen = sortedIncidents.Count(i => IsUrgent(i.Category ?? "") && !IsDone(i.Status ?? "New"));
+
+    var statusMap = new Dictionary<string, (string Css, string Icon)>
+    {
+        ["New"] = ("new", "fa-solid fa-star"),
+        ["Pending"] = ("pen", "fa-regular fa-clock"),
+        ["Assigned"] = ("asg", "fa-solid fa-user-check"),
+        ["Investigating"] = ("inv", "fa-solid fa-magnifying-glass"),
+        ["Resolved"] = ("res", "fa-solid fa-check"),
+        ["Closed"] = ("clo", "fa-solid fa-lock")
+    };
+
+    int totalCount = ViewBag.IncidentTotal ?? sortedIncidents.Count;
+    int newCount = ViewBag.IncidentNew ?? sortedIncidents.Count(i => (i.Status ?? "New") == "New");
+    int penCount = ViewBag.IncidentPending ?? sortedIncidents.Count(i => i.Status == "Pending");
+    int asgCount = ViewBag.IncidentAssigned ?? sortedIncidents.Count(i => i.Status == "Assigned");
+    int invCount = ViewBag.IncidentInvestigating ?? sortedIncidents.Count(i => i.Status == "Investigating");
+    int resCount = ViewBag.IncidentResolved ?? sortedIncidents.Count(i => i.Status == "Resolved");
+    int cloCount = ViewBag.IncidentClosed ?? sortedIncidents.Count(i => i.Status == "Closed");
+
+    double GetPct(int count) => totalCount > 0 ? Math.Round((double)count / totalCount * 100) : 0;
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,474 +42,964 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MIS Dashboard</title>
 
-    <!-- Bootstrap 5 & FontAwesome Icons -->
+    <!-- Bootstrap 5, FontAwesome, Google Font -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
 
     <style>
-        body {
-            background-color: #f1f5f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #334155;
-        }
+            :root {
+                --bg: #f3f4f9;
+                --surface: #ffffff;
+                --ink: #111827;
+                --muted: #6b7280;
+                --line: #e5e7eb;
+                --field: #f9fafb;
+                --brand: #4f46e5;
+                --brandsoft: #eef2ff;
+                --new: #4f46e5;
+                --newbg: #eef2ff;
+                --pen: #d97706;
+                --penbg: #fef3c7;
+                --asg: #0284c7;
+                --asgbg: #e0f2fe;
+                --inv: #c026d3;
+                --invbg: #fae8ff;
+                --res: #16a34a;
+                --resbg: #dcfce7;
+                --clo: #475569;
+                --clobg: #f1f5f9;
+                --urg: #ef4444;
+                --urgbg: #fee2e2;
+                --shadow: 0 1px 3px rgba(0,0,0,0.05);
+            }
 
-        /* Top Navigation Header */
-        .navbar-custom {
-            background: linear-gradient(135deg, #252478 0%, #1e1b4b 100%);
-            color: white;
-            padding: 20px 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
+            body {
+                background: var(--bg);
+                font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+                color: var(--ink);
+                font-size: 14px;
+            }
 
-        .header-icon-box {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: #4f46e5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
+            /* Top Bar */
+            .navbar-custom {
+                background: #1e1b4b;
+                color: #fff;
+                padding: 12px 24px;
+            }
 
-        .btn-portal-back {
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            background: rgba(255, 255, 255, 0.08);
-            color: white;
-            border-radius: 50px;
-            padding: 8px 22px;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
+            .header-icon-box {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: rgba(255,255,255,0.15);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
 
-        .btn-portal-back:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
+            .btn-portal-back {
+                border: 1px solid rgba(255,255,255,0.25);
+                color: #fff;
+                border-radius: 20px;
+                padding: 5px 16px;
+                font-size: 0.825rem;
+                text-decoration: none;
+            }
 
-        /* Metric Overview Cards */
-        .metric-card {
-            background: #ffffff;
-            border: none;
-            border-radius: 20px;
-            padding: 22px 24px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+                .btn-portal-back:hover {
+                    background: rgba(255,255,255,0.1);
+                    color: #fff;
+                }
 
-        .metric-label {
-            font-size: 0.875rem;
-            color: #64748b;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
+            /* Tabs Pill Header */
+            .tabs-header-wrap .nav-link {
+                border-radius: 20px;
+                padding: 6px 18px;
+                font-weight: 600;
+                font-size: 13.5px;
+                color: var(--muted);
+                border: none;
+                background: transparent;
+            }
 
-        .metric-num {
-            font-size: 2.25rem;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 0;
-            line-height: 1;
-        }
+                .tabs-header-wrap .nav-link.active {
+                    background: var(--brand);
+                    color: #fff;
+                }
 
-        .metric-icon-box {
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
+            /* Dashboard Main Layout Split */
+            .dashboard-grid {
+                display: grid;
+                grid-template-columns: 320px 1fr;
+                gap: 20px;
+                align-items: start;
+            }
 
-        .icon-total { background-color: #f1f5f9; color: #64748b; }
-        .icon-pending { background-color: #fef3c7; color: #d97706; }
-        .icon-progress { background-color: #e0f2fe; color: #0284c7; }
-        .icon-resolved { background-color: #dcfce7; color: #16a34a; }
+            /* Left Side Cards Grid (2x4) */
+            .cards-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
 
-        /* Navigation Pills / Tabs */
-        .nav-pills-custom .nav-link {
-            color: #64748b;
-            font-weight: 600;
-            padding: 12px 24px;
-            border-radius: 16px;
-            transition: all 0.2s ease;
-            background-color: #ffffff;
-            border: none;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+            .mc {
+                background: var(--surface);
+                border: 1.5px solid transparent;
+                border-radius: 14px;
+                padding: 12px 14px;
+                box-shadow: var(--shadow);
+                cursor: pointer;
+                text-align: left;
+                position: relative;
+                transition: all 0.15s ease;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
 
-        .nav-pills-custom .nav-link.active {
-            background-color: #4f46e5;
-            color: #ffffff;
-            box-shadow: 0 8px 18px -4px rgba(79, 70, 229, 0.35);
-        }
+                .mc:hover {
+                    border-color: var(--line);
+                    transform: translateY(-1px);
+                }
 
-        .nav-pills-custom .nav-link:hover:not(.active) {
-            background-color: #f8fafc;
-            color: #1e293b;
-        }
+                .mc.active {
+                    border-color: var(--brand);
+                    background: #f8f9ff;
+                }
 
-        /* Main Table Container Card */
-        .dashboard-card {
-            background: #ffffff;
-            border: none;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03);
-            padding: 30px;
-        }
+                .mc b {
+                    font-size: 22px;
+                    font-weight: 800;
+                    line-height: 1;
+                    display: block;
+                    margin-bottom: 2px;
+                }
 
-        .badge-count-pill {
-            background-color: #f1f5f9;
-            color: #64748b;
-            border-radius: 50px;
-            padding: 6px 16px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
+                .mc small {
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--muted);
+                }
 
-        /* Table Styling */
-        .table-custom-card {
-            border: 1px solid #f1f5f9;
-            border-radius: 16px;
-            overflow: hidden;
-        }
+                .mc .ic {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 10px;
+                    display: grid;
+                    place-items: center;
+                    font-size: 0.95rem;
+                    background: var(--field);
+                    color: var(--ink);
+                }
 
-        .table-custom {
-            margin-bottom: 0;
-        }
+            .c-all .ic {
+                background: #e0e7ff;
+                color: #3730a3;
+            }
 
-        .table-custom th {
-            background-color: #f8fafc;
-            color: #64748b;
-            font-weight: 600;
-            font-size: 0.85rem;
-            border-bottom: 1px solid #f1f5f9;
-            padding: 16px 20px;
-        }
+            .c-new .ic {
+                background: var(--newbg);
+                color: var(--new);
+            }
 
-        .table-custom td {
-            vertical-align: middle;
-            padding: 18px 20px;
-            color: #334155;
-            border-bottom: 1px solid #f8fafc;
-        }
+            .c-pen .ic {
+                background: var(--penbg);
+                color: var(--pen);
+            }
 
-        .badge-status-pill {
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
+            .c-asg .ic {
+                background: var(--asgbg);
+                color: var(--asg);
+            }
 
-        .badge-status-pending { background-color: #fef3c7; color: #b45309; }
-        .badge-status-progress { background-color: #e0f2fe; color: #0369a1; }
-        .badge-status-resolved { background-color: #dcfce7; color: #15803d; }
+            .c-inv .ic {
+                background: var(--invbg);
+                color: var(--inv);
+            }
 
-        /* Form Inputs in Action Column */
-        .select-status-custom {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 8px 12px;
-            font-size: 0.875rem;
-            color: #334155;
-        }
+            .c-res .ic {
+                background: var(--resbg);
+                color: var(--res);
+            }
 
-        .input-note-custom {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 8px 14px;
-            font-size: 0.875rem;
-            color: #334155;
-        }
+            .c-clo .ic {
+                background: var(--clobg);
+                color: var(--clo);
+            }
 
-        .input-note-custom:focus, .select-status-custom:focus {
-            background-color: #ffffff;
-            border-color: #6366f1;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
+            .c-urg .ic {
+                background: var(--urgbg);
+                color: var(--urg);
+            }
 
-        .btn-save-purple {
-            background-color: #4f46e5;
-            color: white;
-            border-radius: 12px;
-            padding: 8px 22px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            border: none;
-            transition: all 0.2s ease;
-        }
+            .c-urg b {
+                color: var(--urg);
+            }
 
-        .btn-save-purple:hover {
-            background-color: #4338ca;
-            color: white;
-        }
+            /* Status Overview Card */
+            .status-overview-card {
+                background: var(--surface);
+                border-radius: 16px;
+                padding: 16px;
+                box-shadow: var(--shadow);
+                margin-top: 16px;
+                border: 1px solid var(--line);
+            }
 
-        .badge-asset-tag {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            color: #334155;
-            border-radius: 8px;
-            padding: 4px 10px;
-            font-weight: 500;
-        }
+            .progress-multi {
+                height: 8px;
+                border-radius: 10px;
+                overflow: hidden;
+                display: flex;
+                background: #e5e7eb;
+                margin: 12px 0 16px;
+            }
+
+                .progress-multi .bar-seg {
+                    height: 100%;
+                }
+
+            .status-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 12px;
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+
+                .status-row .dot-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    color: var(--ink);
+                }
+
+                .status-row .dot {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                }
+
+            /* Right Panel */
+            .main-panel-card {
+                background: var(--surface);
+                border: 1px solid var(--line);
+                border-radius: 18px;
+                padding: 20px;
+                box-shadow: var(--shadow);
+            }
+
+            .panel-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .panel-title-group {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+                .panel-title-group h3 {
+                    font-size: 18px;
+                    font-weight: 800;
+                    margin: 0;
+                }
+
+            .badge-pill-soft {
+                background: #eef2ff;
+                color: var(--brand);
+                font-size: 12px;
+                font-weight: 700;
+                padding: 3px 10px;
+                border-radius: 12px;
+            }
+
+            .badge-pill-urg {
+                background: var(--urg);
+                color: #fff;
+                font-size: 12px;
+                font-weight: 700;
+                padding: 3px 10px;
+                border-radius: 12px;
+            }
+
+            .search-box {
+                position: relative;
+                width: 220px;
+            }
+
+                .search-box input {
+                    width: 100%;
+                    padding: 6px 12px 6px 30px;
+                    border-radius: 20px;
+                    border: 1px solid var(--line);
+                    font-size: 12px;
+                    background: var(--field);
+                }
+
+                .search-box i {
+                    position: absolute;
+                    left: 10px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: var(--muted);
+                    font-size: 11px;
+                }
+
+            /* Custom Table Styling */
+            .table-wrap {
+                overflow-x: auto;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+            }
+
+            table.tbl {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+                margin: 0;
+            }
+
+            .tbl th {
+                background: var(--field);
+                padding: 10px 12px;
+                font-size: 11px;
+                font-weight: 700;
+                color: var(--muted);
+                text-transform: uppercase;
+                letter-spacing: 0.02em;
+                border-bottom: 1px solid var(--line);
+                white-space: nowrap;
+            }
+
+            .tbl td {
+                padding: 12px;
+                border-top: 1px solid var(--line);
+                vertical-align: middle;
+                background: #fff;
+            }
+
+            .tbl tr.urgent-sato td {
+                background: #fff5f5;
+            }
+
+            .tbl tr.urgent-vip td {
+                background: #fffdf0;
+            }
+
+            .tbl tr.urgent-sato td:first-child {
+                box-shadow: inset 3px 0 0 var(--urg);
+            }
+
+            .tbl tr.urgent-vip td:first-child {
+                box-shadow: inset 3px 0 0 #f59e0b;
+            }
+
+            .ticket-meta b {
+                display: block;
+                font-size: 13px;
+                color: var(--ink);
+            }
+
+            .ticket-meta small {
+                color: var(--muted);
+                font-size: 11px;
+                font-weight: 600;
+            }
+
+            .loc-meta {
+                font-size: 12px;
+                line-height: 1.3;
+            }
+
+                .loc-meta div:first-child {
+                    font-weight: 700;
+                    color: var(--ink);
+                }
+
+                .loc-meta div:last-child {
+                    color: var(--muted);
+                    font-size: 11px;
+                }
+
+            /* Custom Badges */
+            .case-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 3px 8px;
+                border-radius: 12px;
+                color: #fff;
+                font-weight: 700;
+                font-size: 11px;
+            }
+
+            .case-sato {
+                background: var(--urg);
+            }
+
+            .case-vip {
+                background: #f59e0b;
+            }
+
+            .case-tag em {
+                font-style: normal;
+                font-size: 9px;
+                background: rgba(255,255,255,0.3);
+                padding: 1px 4px;
+                border-radius: 6px;
+                margin-left: 2px;
+            }
+
+            .asset-badge {
+                background: var(--field);
+                border: 1px solid var(--line);
+                padding: 3px 8px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 11px;
+                color: var(--muted);
+            }
+
+            .st-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 3px 10px;
+                border-radius: 12px;
+                font-weight: 700;
+                font-size: 11px;
+            }
+
+                .st-pill::before {
+                    content: "";
+                    width: 5px;
+                    height: 5px;
+                    border-radius: 50%;
+                    background: currentColor;
+                }
+
+            .st-new {
+                background: var(--newbg);
+                color: var(--new);
+            }
+
+            .st-pen {
+                background: var(--penbg);
+                color: var(--pen);
+            }
+
+            .st-asg {
+                background: var(--asgbg);
+                color: var(--asg);
+            }
+
+            .st-inv {
+                background: var(--invbg);
+                color: var(--inv);
+            }
+
+            .st-res {
+                background: var(--resbg);
+                color: var(--res);
+            }
+
+            .st-clo {
+                background: var(--clobg);
+                color: var(--clo);
+            }
+
+            .select-status-custom, .input-note-custom {
+                font-size: 12px;
+                background: var(--field);
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 4px 8px;
+            }
+
+            .select-status-custom {
+                width: 110px;
+            }
+
+            .input-note-custom {
+                width: 100px;
+            }
+
+            @@media (max-width: 1024px) {
+                .dashboard-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* Kelas untuk mengecilkan butang Chat History dan badge New */
+            .btn-chat-custom {
+                font-size: 11px !important;
+                padding: 3px 10px !important;
+                border-radius: 20px !important;
+            }
+
+            .badge-new-custom {
+                font-size: 9px !important;
+                padding: 2px 6px !important;
+            }
+
+            /* Gaya Lencana Status Asas */
+            .st-req {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 5px 12px;
+                border-radius: 999px;
+                font-size: 13px;
+                font-weight: 700;
+                white-space: nowrap;
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                cursor: default;
+            }
+
+                .st-req::before {
+                    content: "";
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: currentColor;
+                    transition: transform 0.25s ease;
+                }
+
+                /* Hover Effect pada Badge Status */
+                .st-req:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
+                }
+
+                    .st-req:hover::before {
+                        transform: scale(1.4);
+                    }
+
+            /* 1. Status Pending / New (Kuning / Amber) */
+            .st-pending {
+                background: #fef3c7;
+                color: #b45309;
+                border: 1px solid #fde68a;
+            }
+
+                .st-pending:hover {
+                    background: #fde68a;
+                    box-shadow: 0 4px 12px -2px rgba(180, 83, 9, 0.25);
+                }
+
+            /* 2. Status In Progress (Biru) */
+            .st-progress {
+                background: #e0f2fe;
+                color: #0369a1;
+                border: 1px solid #bae6fd;
+            }
+
+                .st-progress:hover {
+                    background: #bae6fd;
+                    box-shadow: 0 4px 12px -2px rgba(3, 105, 161, 0.25);
+                }
+
+            /* 3. Status Approved (Hijau) */
+            .st-approved {
+                background: #dcfce7;
+                color: #15803d;
+                border: 1px solid #bbf7d0;
+            }
+
+                .st-approved:hover {
+                    background: #bbf7d0;
+                    box-shadow: 0 4px 12px -2px rgba(21, 128, 61, 0.25);
+                }
+
+            /* Hover Effect untuk Select & Save Button dalam Action Column */
+            .select-status-custom {
+                background: var(--surface);
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                padding: 6px 12px;
+                font-size: 13px;
+                color: var(--ink);
+                transition: all 0.2s ease;
+            }
+
+                .select-status-custom:hover, .select-status-custom:focus {
+                    border-color: var(--brand);
+                    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+                    outline: none;
+                }
+
     </style>
 </head>
 <body>
 
-    <!-- Header / Top Bar -->
+    <!-- ========================================== -->
+    <!---------------- HERO HEADER ------------------->
+    <!-- ========================================== -->
+
     <div class="navbar-custom">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <div class="header-icon-box">
-                    <i class="fa-solid fa-shield-halved fa-lg"></i>
-                </div>
-                <h3 class="mb-0 fw-bold text-white">MIS Dashboard</h3>
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <div class="header-icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+                <h5 class="text-white mb-0 fw-bold">MIS Dashboard</h5>
             </div>
-            <a asp-action="UserPortal" class="btn-portal-back">
-                <i class="fa-solid fa-arrow-left me-2"></i>Switch to User Portal
+            <a asp-controller="UserPortal" asp-action="UserPortal" class="btn-portal-back">
+                <i class="fa-solid fa-arrow-left me-1"></i> Switch to User Portal
             </a>
         </div>
     </div>
 
-    <div class="container my-4 pb-5">
+    <div class="container-fluid px-4 my-3 pb-5">
 
-        <!-- Overview Title -->
-        <div class="mb-4">
-            <h2 class="fw-bold text-dark mb-1">Overview</h2>
-            <p class="text-muted mb-0">Manage request support tickets and equipment requests in one center.</p>
+     <!-- ========================================== -->  
+     <!---------------- NAV HEADER  ------------------->
+     <!-- ========================================== -->
+
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h3 class="fw-bold mb-0">Overview</h3>
+            <ul class="nav tabs-header-wrap" id="adminDashboardTabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" id="incidents-tab" data-bs-toggle="tab" data-bs-target="#incidents-pane" type="button">
+                        MIS Support List
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="mis-tab" data-bs-toggle="tab" data-bs-target="#mis-pane" type="button">
+                        MIS Requests List
+                    </button>
+                </li>
+            </ul>
         </div>
 
-        <!-- Summary Metrics Cards -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div>
-                        <div class="metric-label">Total tickets</div>
-                        <div class="metric-num">@ViewBag.TotalTickets</div>
-                    </div>
-                    <div class="metric-icon-box icon-total">
-                        <i class="fa-solid fa-ticket"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div>
-                        <div class="metric-label">Pending reports</div>
-                        <div class="metric-num">@ViewBag.PendingReports</div>
-                    </div>
-                    <div class="metric-icon-box icon-pending">
-                        <i class="fa-regular fa-clock"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div>
-                        <div class="metric-label">In progress</div>
-                        <div class="metric-num">@ViewBag.InProgress</div>
-                    </div>
-                    <div class="metric-icon-box icon-progress">
-                        <i class="fa-solid fa-rotate"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div>
-                        <div class="metric-label">Resolved / closed</div>
-                        <div class="metric-num">@ViewBag.Closed</div>
-                    </div>
-                    <div class="metric-icon-box icon-resolved">
-                        <i class="fa-regular fa-circle-check"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- ========================================== -->
+        <!---------------- SUPPORT LIST ------------------>
+        <!-- ========================================== -->
 
-        <!-- Dashboard Tabs -->
-        <ul class="nav nav-pills nav-pills-custom gap-3 mb-4" id="adminDashboardTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="incidents-tab" data-bs-toggle="tab" data-bs-target="#incidents-pane" type="button" role="tab">
-                    <i class="fa-solid fa-wrench me-1"></i> Incident Reports
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="mis-tab" data-bs-toggle="tab" data-bs-target="#mis-pane" type="button" role="tab">
-                    <i class="fa-solid fa-laptop me-1"></i> Equipment Requests
-                </button>
-            </li>
-        </ul>
-
-        <!-- Tab Content Sections -->
         <div class="tab-content" id="adminDashboardContent">
+        <div class="tab-pane fade show active" id="incidents-pane" role="tabpanel">
 
-            <!-- TAB 1: INCIDENT REPORTS SUPPORT -->
-            <div class="tab-pane fade show active" id="incidents-pane" role="tabpanel" tabindex="0">
-                <div class="dashboard-card">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="fw-bold mb-0 text-dark">Incident & trouble tickets</h3>
-                        <span class="badge-count-pill">@Model.Incidents.Count record</span>
+        <div class="dashboard-grid">
+        <div>
+        <div class="cards-grid">
+        <button type="button" class="mc c-all active" data-filter="all">
+        <div><b>@totalCount</b><small>All tickets</small></div>
+        <div class="ic"><i class="fa-solid fa-ticket"></i></div>
+        </button>
+
+        <button type="button" class="mc c-new" data-filter="New">
+        <div><b>@newCount</b><small>New</small></div>
+        <div class="ic"><i class="fa-solid fa-star"></i></div>
+        </button>
+
+        <button type="button" class="mc c-pen" data-filter="Pending">
+        <div><b>@penCount</b><small>Pending</small></div>
+        <div class="ic"><i class="fa-regular fa-clock"></i></div>
+       </button>
+
+        <button type="button" class="mc c-asg" data-filter="Assigned">
+        <div><b>@asgCount</b><small>Assigned</small></div>
+        <div class="ic"><i class="fa-solid fa-user-check"></i></div>
+        </button>
+
+        <button type="button" class="mc c-inv" data-filter="Investigating">
+        <div><b>@invCount</b><small>Investigating</small></div>
+        <div class="ic"><i class="fa-solid fa-magnifying-glass"></i></div>
+        </button>
+
+        <button type="button" class="mc c-res" data-filter="Resolved">
+        <div><b>@resCount</b><small>Resolved</small></div>
+        <div class="ic"><i class="fa-solid fa-check"></i></div>
+        </button>
+
+        <button type="button" class="mc c-clo" data-filter="Closed">
+        <div><b>@cloCount</b><small>Closed</small></div>
+        <div class="ic"><i class="fa-solid fa-lock"></i></div>
+        </button>
+
+        <button type="button" class="mc c-urg" data-filter="urgent">
+        <div><b>@urgentOpen</b><small>Urgent open</small></div>
+        <div class="ic"><i class="fa-solid fa-bolt"></i></div>
+        </button>
+        </div>
+
+                             <!-- ========================================== -->
+                             <!-------------- STATUS OVERVIEW ----------------->
+                             <!-- ========================================== -->
+
+                        <div class="status-overview-card">
+                            <h6 class="fw-bold mb-1" style="font-size: 13px;">Status overview</h6>
+                            <div class="progress-multi">
+                                <div class="bar-seg" style="width: @GetPct(newCount)%; background: var(--new);"></div>
+                                <div class="bar-seg" style="width: @GetPct(penCount)%; background: var(--pen);"></div>
+                                <div class="bar-seg" style="width: @GetPct(asgCount)%; background: var(--asg);"></div>
+                                <div class="bar-seg" style="width: @GetPct(invCount)%; background: var(--inv);"></div>
+                                <div class="bar-seg" style="width: @GetPct(resCount)%; background: var(--res);"></div>
+                                <div class="bar-seg" style="width: @GetPct(cloCount)%; background: var(--clo);"></div>
+                            </div>
+
+
+                            <div class="status-row">
+                                <span class="dot-label"><span class="dot" style="background: var(--new);"></span> New</span>
+                                <div><span class="me-3">@newCount</span><span class="text-muted">@GetPct(newCount)%</span></div>
+                            </div>
+                            <div class="status-row">
+                                <span class="dot-label"><span class="dot" style="background: var(--pen);"></span> Pending</span>
+                                <div><span class="me-3">@penCount</span><span class="text-muted">@GetPct(penCount)%</span></div>
+                            </div>
+
+                            <div class="status-row">
+                                <span class="dot-label"><span class="dot" style="background: var(--asg);"></span> Assigned</span>
+                                <div><span class="me-3">@asgCount</span><span class="text-muted">@GetPct(asgCount)%</span></div>
+                            </div>
+
+                            <div class="status-row">
+                                <span class="dot-label"><span class="dot" style="background: var(--inv);"></span> Investigating</span>
+                                <div><span class="me-3">@invCount</span><span class="text-muted">@GetPct(invCount)%</span></div>
+                            </div>
+
+                            <div class="status-row">
+                                <span class="dot-label"><span class="dot" style="background: var(--res);"></span> Resolved</span>
+                                <div><span class="me-3">@resCount</span><span class="text-muted">@GetPct(resCount)%</span></div>
+                            </div>
+
+                            <div class="status-row mb-0">
+                                <span class="dot-label"><span class="dot" style="background: var(--clo);"></span> Closed</span>
+                                <div><span class="me-3">@cloCount</span><span class="text-muted">@GetPct(cloCount)%</span></div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="table-responsive table-custom-card">
-                        <table class="table table-custom align-middle">
+
+        <!-- ========================================== -->
+        <!----------- RIGHT: TABLE & ACTIONS ------------->
+        <!-- ========================================== -->
+
+        <div class="main-panel-card">
+        <div class="panel-header">
+        <div class="panel-title-group">
+        <span class="dot" style="width:10px; height:10px; background:var(--ink); border-radius:50%;"></span>
+        <h3 id="panelTitle">MIS Support Tickets</h3>
+        <span class="badge-pill-soft" id="recordCount">@sortedIncidents.Count records</span>
+        @if (urgentOpen > 0)
+        {
+        <span class="badge-pill-urg"><i class="fa-solid fa-bolt me-1"></i>@urgentOpen urgent open</span>
+        }
+        </div>
+
+        <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="tableSearchInput" placeholder="Search ID, asset, problem..." />
+        </div>
+        </div>
+
+        <div class="table-wrap">
+        <table class="tbl">
+        <thead>
+        <tr>
+         <th style="width: 30px;">#</th>
+         <th>Ticket</th>
+         <th>Category</th>
+         <th>Location</th>
+         <th>Problem</th>
+         <th>Status</th>
+         <th>Admin comments</th>
+         <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        @if (sortedIncidents.Any())
+        {
+        for (int i = 0; i < sortedIncidents.Count; i++)
+        {
+        var item = sortedIncidents[i];
+        var status = item.Status ?? "New";
+        var category = item.Category ?? "General";
+        var urgent = IsUrgent(category);
+        var rowClass = category == "SATO Case" ? "urgent-sato" : category == "VIP Case" ? "urgent-vip" : "";
+        var sm = statusMap.TryGetValue(status, out var found) ? found : statusMap["Pending"];
+
+        <tr class="incident-row @rowClass" data-status="@status" data-urgent="@(urgent ? "true" : "false")" 
+            style="cursor: pointer;" 
+            onclick="if(event.target.closest('button') || event.target.closest('form') || event.target.closest('.modal')) return; location.href='@Url.Action("TicketDetails", "AdminDashboard", new { id = item.Id })'">
+        <td class="row-number text-muted">@(i + 1)</td>
+        
+        <td>
+           <div class="ticket-meta">
+           <!-- 1) Papar Nombor Tiket (ID Baharu yyyymmdd-01) -->
+           <b class="text-primary">@item.Id</b>
+           <!-- 2) Papar maklumat Employee ID & Asset Name di bawahnya -->
+           <small class="text-muted d-block">@item.EmployeeId · @item.AssetName</small>
+           </div>
+        </td>
+     
+        <td>
+        @if (category == "SATO Case")
+        {
+        <span class="case-tag case-sato"><i class="fa-solid fa-bolt"></i> SATO Case <em>URGENT</em></span>
+        }
+        else if (category == "VIP Case")
+        {
+        <span class="case-tag case-vip"><i class="fa-solid fa-crown"></i> VIP Case <em>URGENT</em></span>
+        }
+        else
+        {
+        <span class="asset-badge">@category</span>
+        }
+        </td>
+        
+        <td>
+        <div class="loc-meta">
+        <div>@item.Department</div>
+        <div>@item.Section · @item.Area</div>
+        </div>
+        </td>
+
+        <td style="max-width: 180px;">@item.ProblemDescription</td>
+        <td>
+        <span class="st-pill st-@(sm.Css)">@status</span>
+        </td>
+
+        <td>
+        
+        <!-- ========================================== -->
+        <!---------------- CHAT & ACTION LOG -------------->
+        <!-- ========================================== -->
+
+        <div class="mb-1">
+        @if (string.IsNullOrWhiteSpace(item.AdminComments))
+        {
+        <span class="text-muted small fs-7">No comment</span>
+        }
+        else
+        {
+        <span class="small"><strong>Admin:</strong> @item.AdminComments</span>
+        }
+        </div>
+
+        <!-- ========================================== -->
+        <!--------------- ADMIN COMMENTS / VIEW DETAILS -->
+        <!-- ========================================== -->
+
+        <td>
+            <a href="@Url.Action("TicketDetails", "AdminDashboard", new { id = item.Id })" 
+               class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1 shadow-sm"
+               style="font-size: 11px; border-radius: 20px; padding: 5px 14px;">
+                <i class="fa-solid fa-eye"></i> View Details
+            </a>
+        </td>
+        
+        <td>
+        <form asp-action="UpdateIncidentStatus" method="post" class="d-flex align-items-center gap-1">
+        <input type="hidden" name="id" value="@item.Id" />
+        <select name="status" class="select-status-custom">
+        <option selected="@(status == "New")">New</option>
+        <option selected="@(status == "Assigned")">Assigned</option>
+        <option selected="@(status == "Pending")">Pending</option>
+        <option selected="@(status == "Investigating")">Investigating</option>
+        <option selected="@(status == "Resolved")">Resolved</option>
+        <option selected="@(status == "Closed")">Closed</option>
+        </select>
+        
+        <input type="text" name="comments" placeholder="Add note..." class="input-note-custom" />
+        <button type="submit" class="btn btn-sm btn-primary py-1 px-2">Save</button>
+        </form>
+        </td>
+        </tr>
+        }
+        }
+        else
+        {
+        <tr>
+        <td colspan="8" class="text-center py-4 text-muted">No incident reports found.</td>
+        </tr>
+        }
+        </tbody>
+        </table>
+        </div>
+        </div>
+        </div>
+        </div>
+
+            <!-- ========================================== -->
+            <!------------- MIS Request List ----------------->
+            <!-- ========================================== -->
+
+            <div class="tab-pane fade" id="mis-pane" role="tabpanel">
+                <div class="main-panel-card mt-3">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <span class="dot" style="width:10px; height:10px; background:var(--ink); border-radius:50%;"></span>
+                            <h3>MIS Request List</h3>
+                            <span class="badge-pill-soft">@(Model.MisRequests?.Count ?? 0) records</span>
+                        </div>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table class="tbl" style="min-width:900px;">
                             <thead>
                                 <tr>
-                                    <th>Employee ID</th>
-                                    <th>Asset name</th>
-                                    <th>Department</th>
-                                    <th>Problem</th>
-                                    <th>Status</th>
-                                    <th>Admin comments</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model.Incidents != null && Model.Incidents.Any())
-                                {
-                                    @foreach (var item in Model.Incidents)
-                                    {
-                                        var status = item.Status ?? "Pending";
-                                        <tr>
-                                            <td class="fw-bold text-dark">@item.EmployeeId</td>
-                                            <td><span class="badge-asset-tag">@item.AssetName</span></td>
-                                            <td>@item.Department</td>
-                                            <td style="max-width: 200px;">@item.ProblemDescription</td>
-                                            <td>
-                                                @if (status == "Resolved")
-                                                {
-                                                    <span class="badge-status-pill badge-status-resolved">
-                                                        <i class="fa-solid fa-circle fa-2xs"></i> Resolved
-                                                    </span>
-                                                }
-                                                else if (status == "In Progress")
-                                                {
-                                                    <span class="badge-status-pill badge-status-progress">
-                                                        <i class="fa-solid fa-circle fa-2xs"></i> In Progress
-                                                    </span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge-status-pill badge-status-pending">
-                                                        <i class="fa-solid fa-circle fa-2xs"></i> Pending
-                                                    </span>
-                                                }
-                                            </td>
-
-                                            <td class="text-muted small">
-                                                @if (string.IsNullOrWhiteSpace(item.AdminComments))
-                                                {
-                                                    <span class="text-black-50"><em>- No comment -</em></span>
-                                                }
-                                                else
-                                                {
-                                                    <span>@item.AdminComments</span>
-                                                }
-                                            </td>
-
-                                            <td>
-                                                <form asp-action="UpdateIncidentStatus" method="post" class="d-flex gap-2 align-items-center">
-                                                    <input type="hidden" name="id" value="@item.Id" />
-                                                    <select name="status" class="form-select select-status-custom" style="width: 120px;">
-                                                        <option selected="@(status == "Pending")">Pending</option>
-                                                        <option selected="@(status == "In Progress")">In Progress</option>
-                                                        <option selected="@(status == "Resolved")">Resolved</option>
-                                                    </select>
-                                                    <input type="text" name="comments" placeholder="Add note..." class="form-control input-note-custom" style="width: 150px;" required />
-                                                    <button type="submit" class="btn btn-save-purple">Save</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    }
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td colspan="7" class="text-center py-4 text-muted">No incident reports found.</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 2: MIS EQUIPMENT REQUESTS -->
-            <div class="tab-pane fade" id="mis-pane" role="tabpanel" tabindex="0">
-                <div class="dashboard-card">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="fw-bold mb-0 text-dark">MIS hardware & asset requests</h3>
-                        <span class="badge-count-pill">@Model.MisRequests.Count record</span>
-                    </div>
-
-                    <div class="table-responsive table-custom-card">
-                        <table class="table table-custom align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Requester ID</th>
-                                    <th>Department</th>
-                                    <th>Request type</th>
-                                    <th>New hire name</th>
-                                    <th>Needed date</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th style="width:50px;">#</th>
+                                    <th>REQUESTER ID</th>
+                                    <th>DEPARTMENT</th>
+                                    <th>REQUEST TYPE</th>
+                                    <th>NEW HIRE NAME</th>
+                                    <th>NEEDED DATE</th>
+                                    <th>STATUS</th>
+                                    <th style="width:160px;">ACTION</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if (Model.MisRequests != null && Model.MisRequests.Any())
                                 {
-                                    @foreach (var mis in Model.MisRequests)
+                                    for (int i = 0; i < Model.MisRequests.Count; i++)
                                     {
+                                        var mis = Model.MisRequests[i];
                                         var misStatus = mis.Status ?? "Pending";
+
+                                        // Tentukan kelas CSS & ikon berdasarkan 3 status
+                                        string statusCss = "st-pending";
+                                        string iconCss = "fa-regular fa-clock";
+
+                                        if (misStatus == "In Progress")
+                                        {
+                                            statusCss = "st-progress";
+                                            iconCss = "fa-solid fa-spinner fa-spin-pulse";
+                                        }
+                                        else if (misStatus == "Approved" || misStatus == "Approve")
+                                        {
+                                            statusCss = "st-approved";
+                                            iconCss = "fa-solid fa-check";
+                                        }
+
                                         <tr>
-                                            <td class="fw-bold text-dark">@mis.RequesterEmployeeId</td>
+                                            <td class="num">@(i + 1)</td>
+                                            <td class="eid">@mis.RequesterEmployeeId</td>
                                             <td>@mis.Department</td>
                                             <td><span class="badge-asset-tag">@mis.RequestType</span></td>
                                             <td>@(string.IsNullOrEmpty(mis.NewHireName) ? "-" : mis.NewHireName)</td>
                                             <td>@mis.NeededDate.ToString("yyyy-MM-dd")</td>
                                             <td>
-                                                @if (misStatus == "Approved" || misStatus == "Resolved")
-                                                {
-                                                    <span class="badge-status-pill badge-status-resolved">
-                                                        <i class="fa-solid fa-circle fa-2xs"></i> Approved
-                                                    </span>
-                                                }
-                                                else if (misStatus == "In Progress")
-                                                {
-                                                    <span class="badge-status-pill badge-status-progress">
-                                                        <i class="fa-solid fa-circle fa-2xs"></i> In Progress
-                                                    </span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge-status-pill badge-status-pending">
-                                                        <i class="fa-solid fa-circle fa-2xs"></i> Pending
-                                                    </span>
-                                                }
+                                                <!-- Badge status interaktif dengan hover effect -->
+                                                <span class="st-req @statusCss">
+                                                    <i class="@iconCss"></i> @misStatus
+                                                </span>
                                             </td>
                                             <td>
-                                                <form asp-action="UpdateMisStatus" method="post" class="d-flex gap-2 align-items-center">
+                                                <form asp-action="UpdateMisStatus" method="post" class="act d-flex gap-2 align-items-center">
                                                     <input type="hidden" name="id" value="@mis.Id" />
-                                                    <select name="status" class="form-select select-status-custom" style="width: 130px;">
-                                                        <option selected="@(misStatus == "Pending")">Pending</option>
+                                                    <select name="status" class="select-status-custom">
+                                                        <option selected="@(misStatus == "Pending" || misStatus == "New")">Pending</option>
                                                         <option selected="@(misStatus == "In Progress")">In Progress</option>
-                                                        <option selected="@(misStatus == "Approved")">Approved</option>
+                                                        <option selected="@(misStatus == "Approved" || misStatus == "Approve")">Approved</option>
                                                     </select>
-                                                    <button type="submit" class="btn btn-save-purple">Save</button>
+                                                    <button type="submit" class="btn-save-purple">Save</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -487,20 +1008,132 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="7" class="text-center py-4 text-muted">No MIS equipment requests found.</td>
+                                        <td colspan="8" class="text-center py-4 text-muted">No MIS equipment requests found.</td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
                     </div>
-                </div>
-            </div>
-
+        </div>
+        </div>
+        </div>
         </div>
 
-    </div>
-
-    <!-- Bootstrap JS Bundle -->
+            <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Client-Side Search and Card Filter Logic -->
+    <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var cards = document.querySelectorAll(".mc");
+                var rows = document.querySelectorAll(".incident-row");
+                var searchInput = document.getElementById("tableSearchInput");
+                var DONE = ["Resolved", "Closed"];
+                var currentFilter = "all";
+
+                function filterTable() {
+                    var query = searchInput.value.toLowerCase();
+                    var shownCount = 0;
+
+                    rows.forEach(function (row) {
+                        var status = row.getAttribute("data-status");
+                        var isUrgent = row.getAttribute("data-urgent") === "true";
+                        var text = row.innerText.toLowerCase();
+
+                        // Status filter match
+                        var filterMatch = (currentFilter === "all") ||
+                            (currentFilter === "urgent" ? (isUrgent && DONE.indexOf(status) === -1) : status === currentFilter);
+
+                        // Search query match
+                        var searchMatch = text.indexOf(query) !== -1;
+
+                        if (filterMatch && searchMatch) {
+                            row.style.display = "";
+                            shownCount++;
+                            var numCell = row.querySelector(".row-number");
+                            if (numCell) numCell.innerText = shownCount;
+                        } else {
+                            row.style.display = "none";
+                        }
+                    });
+
+                    document.getElementById("recordCount").innerText = shownCount + " records";
+                }
+
+                // Card click handler
+                cards.forEach(function (card) {
+                    card.addEventListener("click", function () {
+                        cards.forEach(c => c.classList.remove("active"));
+                        this.classList.add("active");
+
+                        currentFilter = this.getAttribute("data-filter");
+                        var title = currentFilter === "all" ? "MIS Support Tickets" :
+                                    currentFilter === "urgent" ? "Urgent Cases" : currentFilter + " Tickets";
+                        document.getElementById("panelTitle").innerText = title;
+
+                        filterTable();
+                    });
+                });
+
+                // Live Search Input handler
+                if (searchInput) {
+                    searchInput.addEventListener("keyup", filterTable);
+                }
+            });
+
+            function markChatAsRead(itemId) {
+                    // 1. Hilangkan badge "New" serta-merta pada paparan UI
+                    const badge = document.getElementById(`unread-badge-${itemId}`);
+                    if (badge) {
+                        badge.style.display = 'none';
+                    }
+
+                    // 2. Hantar request ke Controller untuk kemaskini data di backend
+                    fetch('/AdminDashboard/MarkChatAsRead?id=' + encodeURIComponent(itemId), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).catch(error => console.error('Error:', error));
+                }
+
+            function sendAdminMessage(event, itemId) {
+                    event.preventDefault(); // Halang page daripada reload secara lalai
+
+                    const form = event.target;
+                    const formData = new FormData(form);
+
+                    // Hantar data menggunakan Fetch API (AJAX)
+                    fetch('/AdminDashboard/UpdateIncidentStatus', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Simpan ID modal yang sedang dibuka ke dalam sessionStorage supaya ia boleh dibuka semula selepas reload
+                            sessionStorage.setItem('activeModal', 'chatModal-' + itemId);
+
+                            // Reload halaman untuk paparkan mesej terkini
+                            location.reload();
+                        } else {
+                            alert('Failed to send message.');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+
+                // Auto-buka semula modal yang sama selepas halaman selesai di-reload
+                document.addEventListener("DOMContentLoaded", function () {
+                    const activeModalId = sessionStorage.getItem('activeModal');
+                    if (activeModalId) {
+                        sessionStorage.removeItem('activeModal'); // Padam semula selepas guna
+                        const modalElement = document.getElementById(activeModalId);
+                        if (modalElement) {
+                            const modal = new bootstrap.Modal(modalElement);
+                            modal.show();
+                        }
+                    }
+                });
+    </script>
 </body>
 </html>

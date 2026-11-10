@@ -56,199 +56,257 @@
             color: white;
         }
 
-        /* Main Card Container */
-        .track-card {
-            background: white;
-            border-radius: 28px;
-            padding: 45px 50px;
-            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.05);
-            margin-top: 10px;
-        }
+        /* Gaya untuk Butang Admin Login di bahagian Header Biru */
+.btn-admin-login {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
 
-        .icon-box-green {
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
-            background-color: #e6fffa;
-            color: #0d9488;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.35rem;
-        }
+.btn-admin-login:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.5);
+}
 
-        /* Search Bar & Button Styling */
-        .search-group-custom {
-            position: relative;
-            flex-grow: 1;
-        }
+/* Gaya untuk Butang Back Berbentuk Pil */
+.btn-back-pill {
+    background-color: #f8fafc;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
 
-        .search-group-custom .search-icon {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 1.1rem;
-            z-index: 5;
-            pointer-events: none;
-        }
+.btn-back-pill:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
 
-        .input-search-custom {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 14px 20px 14px 50px;
-            font-size: 0.95rem;
-            color: #334155;
-            width: 100%;
-            transition: all 0.2s ease;
-        }
+  /* Main Card Container */
+.track-card {
+    background: white;
+    border-radius: 28px;
+    padding: 45px 50px;
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.05);
+    margin-top: 10px;
+}
 
-        .input-search-custom:focus {
-            background-color: #ffffff;
-            border-color: #6366f1;
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
+ .icon-box-green {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background-color: #e6fffa;
+    color: #0d9488;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+}
 
-        .btn-search-purple {
-            background: #4f46e5;
-            color: white;
-            border-radius: 16px;
-            padding: 0 35px;
-            font-weight: 600;
-            border: none;
-            transition: all 0.2s ease;
-        }
+/* Search Bar & Button Styling */
+  .search-group-custom {
+    position: relative;
+    flex-grow: 1;
+}
 
-        .btn-search-purple:hover {
-            background: #4338ca;
-            color: white;
-        }
+  .search-group-custom .search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 1.1rem;
+    z-index: 5;
+    pointer-events: none;
+}
 
-        /* Ticket Status Card */
-        .ticket-result-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            padding: 30px;
-            background-color: #ffffff;
-        }
+ .input-search-custom {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 14px 20px 14px 50px;
+    font-size: 0.95rem;
+    color: #334155;
+    width: 100%;
+    transition: all 0.2s ease;
+}
 
-        .badge-status-pill {
-            padding: 6px 18px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
+ .input-search-custom:focus {
+    background-color: #ffffff;
+    border-color: #6366f1;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
 
-        .badge-status-pending {
-            background-color: #fef3c7;
-            color: #b45309;
-        }
+  .btn-search-purple {
+    background: #4f46e5;
+    color: white;
+    border-radius: 16px;
+    padding: 0 35px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+ }
 
-        .badge-status-progress {
-            background-color: #e0f2fe;
-            color: #0369a1;
-        }
+  .btn-search-purple:hover {
+    background: #4338ca;
+    color: white;
+ }
 
-        .badge-status-resolved {
-            background-color: #dcfce7;
-            color: #15803d;
-        }
+ /* Ticket Status Card */
+ .ticket-result-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 30px;
+    background-color: #ffffff;
+ }
 
-        /* Step Progress Line Bar */
-        .progress-step-container {
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 25px 40px 30px 40px;
-        }
+ /* Status Badges */
+  .badge-status-pill {
+    padding: 6px 18px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-        .progress-step-line {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background-color: #e2e8f0;
-            z-index: 1;
-            transform: translateY(-50%);
-        }
+  .badge-status-new { 
+    background-color: #e0e7ff; 
+    color: #3730a3; 
+  }
 
-        .progress-step-line-active {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            height: 3px;
-            background-color: #4f46e5;
-            z-index: 2;
-            transform: translateY(-50%);
-            transition: width 0.3s ease;
-        }
+  .badge-status-assigned { 
+    background-color: #e0f2fe; 
+    color: #0369a1; 
+  }
 
-        .step-point {
-            position: relative;
-            z-index: 3;
-            text-align: center;
-            background: white;
-        }
+  .badge-status-pending { 
+    background-color: #fef3c7; 
+    color: #b45309; 
+  }
 
-        .step-circle {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 3px solid #cbd5e1;
-            background-color: white;
-            margin: 0 auto 8px auto;
-            transition: all 0.3s ease;
-        }
+  .badge-status-investigating { 
+     background-color: #fae8ff; 
+     color: #86198f; 
+  }
 
-        .step-circle.active-solid {
-            background-color: #4f46e5;
-            border-color: #4f46e5;
-        }
+  .badge-status-resolved { 
+     background-color: #dcfce7; 
+     color: #15803d; 
+  }
 
-        .step-circle.active-halo {
-            background-color: #e0f2fe;
-            border: 4px solid #0284c7;
-        }
+  .badge-status-closed { 
+    background-color: #f1f5f9; 
+    color: #475569; 
+  }
 
-        .step-circle.completed {
-            background-color: #10b981;
-            border-color: #10b981;
-        }
+  /* Step Progress Bar */
+  .progress-step-container {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 20px 35px 20px;
+  }
 
-        .step-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #64748b;
-        }
+  .progress-step-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: #e2e8f0;
+    z-index: 1;
+    transform: translateY(-50%);
+  }
 
-        .step-label.active {
-            color: #0f172a;
-        }
+ .step-point {
+   position: relative;
+   z-index: 3;
+   text-align: center;
+   background: white;
+   padding: 0 8px;
+ }
 
-        /* Comment Box Styling */
-        .admin-comment-box {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 16px 20px;
-            color: #334155;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-    </style>
+ .step-circle {
+   width: 32px;
+   height: 32px;
+   border-radius: 50%;
+   border: 3px solid #cbd5e1;
+   background-color: white;
+   margin: 0 auto 6px auto;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-size: 0.75rem;
+   color: #94a3b8;
+   transition: all 0.3s ease;
+  }
+
+  .step-circle.active {
+    background-color: #4f46e5;
+    border-color: #4f46e5;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+  }
+
+  .step-circle.completed {
+    background-color: #10b981;
+    border-color: #10b981;
+    color: white;
+  }
+
+  .step-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+ .step-label.active {
+   color: #4f46e5;
+  }
+
+ .step-label.completed {
+   color: #10b981;
+ }
+
+ /* Comment Box Styling */
+ .admin-comment-box {
+   background-color: #f8fafc;
+   border: 1px solid #e2e8f0;
+   border-radius: 16px;
+   padding: 16px 20px;
+   color: #334155;
+   display: flex;
+   align-items: center;
+   gap: 12px;
+  }
+</style>
 </head>
 <body>
 
-    <!-- Header Section -->
+   <!-- ========================================== -->
+   <!---------------- HERO HEADER ------------------->
+   <!-- ========================================== -->
+
     <div class="hero-section">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-3">
@@ -257,22 +315,26 @@
                 </div>
                 <h2 class="fw-bold mb-0 text-white">MIS Helpdesk</h2>
             </div>
-            <a asp-action="UserPortal" class="btn-portal-back">
-                <i class="fa-solid fa-arrow-left me-2"></i>Back to User Portal
-            </a>
+        <a asp-controller="AdminLogin" asp-action="Login" class="btn-admin-login">
+            <i class="fa-solid fa-lock me-2"></i>Admin login
+        </a>
         </div>
     </div>
 
     <div class="container pb-5" style="position: relative; z-index: 10;">
         <div class="track-card">
-
-            <!-- Title Header -->
-            <div class="d-flex align-items-center gap-3 mb-2">
-                <div class="icon-box-green">
-                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box-green">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    </div>
+                    <h2 class="fw-bold text-dark mb-0">Track Status</h2>
                 </div>
-                <h2 class="fw-bold text-dark mb-0">Track Status</h2>
+<a asp-controller="UserPortal" asp-action="UserPortal" class="btn btn-back-pill">
+    <i class="fa-solid fa-arrow-left me-1"></i> Back
+</a>                
             </div>
+
             <p class="text-muted mb-4" style="margin-left: 68px;">
                 Check the real-time progress of your ticket without contacting the IT team.
             </p>
@@ -295,8 +357,18 @@
                 <div class="d-flex flex-column gap-4">
                     @foreach (var item in Model)
                     {
-                        var status = item.Status ?? "Pending";
-                        int progressPercent = status == "Resolved" ? 100 : (status == "In Progress" ? 50 : 0);
+                        var status = item.Status ?? "New";
+
+                        bool isSubmittedDone = (status != "New");
+                        bool isSubmittedActive = (status == "New");
+
+                        bool isAssignedDone = (status == "Investigating" || status == "Resolved" || status == "Closed");
+                        bool isAssignedActive = (status == "Assigned" || status == "Pending");
+
+                        bool isInvestigatingDone = (status == "Resolved" || status == "Closed");
+                        bool isInvestigatingActive = (status == "Investigating");
+
+                        bool isResolvedDone = (status == "Resolved" || status == "Closed");
 
                         <div class="ticket-result-card">
                             
@@ -304,52 +376,75 @@
                             <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
                                 <span class="fw-bold text-dark">Ticket Status</span>
                                 <div>
-                                    @if (status == "Resolved")
+                                    @if (status == "New")
                                     {
-                                        <span class="badge-status-pill badge-status-resolved">
-                                            <i class="fa-solid fa-circle fa-2xs"></i> Resolved
-                                        </span>
+                                        <span class="badge-status-pill badge-status-new"><i class="fa-solid fa-star fa-2xs"></i> New</span>
                                     }
-                                    else if (status == "In Progress")
+                                    else if (status == "Assigned")
                                     {
-                                        <span class="badge-status-pill badge-status-progress">
-                                            <i class="fa-solid fa-circle fa-2xs"></i> In Progress
-                                        </span>
+                                        <span class="badge-status-pill badge-status-assigned"><i class="fa-solid fa-user-check fa-2xs"></i> Assigned</span>
+                                    }
+                                    else if (status == "Pending")
+                                    {
+                                        <span class="badge-status-pill badge-status-pending"><i class="fa-regular fa-clock fa-2xs"></i> Pending</span>
+                                    }
+                                    else if (status == "Investigating")
+                                    {
+                                        <span class="badge-status-pill badge-status-investigating"><i class="fa-solid fa-magnifying-glass fa-2xs"></i> Investigating</span>
+                                    }
+                                    else if (status == "Resolved")
+                                    {
+                                        <span class="badge-status-pill badge-status-resolved"><i class="fa-solid fa-check fa-2xs"></i> Resolved</span>
+                                    }
+                                    else if (status == "Closed")
+                                    {
+                                        <span class="badge-status-pill badge-status-closed"><i class="fa-solid fa-lock fa-2xs"></i> Closed</span>
                                     }
                                     else
                                     {
-                                        <span class="badge-status-pill badge-status-pending">
-                                            <i class="fa-solid fa-circle fa-2xs"></i> Pending
-                                        </span>
+                                        <span class="badge-status-pill badge-status-pending"><i class="fa-regular fa-clock fa-2xs"></i> @status</span>
                                     }
                                 </div>
                             </div>
 
-                            <!-- Visual Step Progress Bar -->
+                            <!-- Step Progress Bar -->
                             <div class="progress-step-container">
                                 <div class="progress-step-line"></div>
-                                <div class="progress-step-line-active" style="width: @progressPercent%;"></div>
 
                                 <!-- Step 1: Submitted -->
                                 <div class="step-point">
-                                    <div class="step-circle active-solid"></div>
-                                    <div class="step-label active">Submitted</div>
+                                    <div class="step-circle @(isSubmittedDone ? "completed" : (isSubmittedActive ? "active" : ""))">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                    <div class="step-label @(isSubmittedDone ? "completed" : (isSubmittedActive ? "active" : ""))">Submitted</div>
                                 </div>
 
-                                <!-- Step 2: In Progress -->
+                                <!-- Step 2: Assigned -->
                                 <div class="step-point">
-                                    <div class="step-circle @(status == "In Progress" ? "active-halo" : (status == "Resolved" ? "completed" : ""))"></div>
-                                    <div class="step-label @(status == "In Progress" || status == "Resolved" ? "active" : "")">In Progress</div>
+                                    <div class="step-circle @(isAssignedDone ? "completed" : (isAssignedActive ? "active" : ""))">
+                                        <i class="fa-solid fa-user-check"></i>
+                                    </div>
+                                    <div class="step-label @(isAssignedDone ? "completed" : (isAssignedActive ? "active" : ""))">Assigned</div>
                                 </div>
 
-                                <!-- Step 3: Resolved -->
+                                <!-- Step 3: Investigating -->
                                 <div class="step-point">
-                                    <div class="step-circle @(status == "Resolved" ? "completed" : "")"></div>
-                                    <div class="step-label @(status == "Resolved" ? "active" : "")">Resolved</div>
+                                    <div class="step-circle @(isInvestigatingDone ? "completed" : (isInvestigatingActive ? "active" : ""))">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                    </div>
+                                    <div class="step-label @(isInvestigatingDone ? "completed" : (isInvestigatingActive ? "active" : ""))">Investigating</div>
+                                </div>
+
+                                <!-- Step 4: Resolved / Closed -->
+                                <div class="step-point">
+                                    <div class="step-circle @(isResolvedDone ? "completed" : "")">
+                                        <i class="fa-solid fa-flag-checkered"></i>
+                                    </div>
+                                    <div class="step-label @(isResolvedDone ? "completed" : "")">Resolved</div>
                                 </div>
                             </div>
 
-                            <!-- Separated Details Row (Employee ID, Asset Name, Department) -->
+                            <!-- Details Row -->
                             <div class="row g-4 mb-3">
                                 <div class="col-md-4">
                                     <span class="text-muted small d-block mb-1">Employee ID</span>
@@ -371,22 +466,96 @@
                                 <h6 class="fw-bold text-dark mb-0">@item.ProblemDescription</h6>
                             </div>
 
-                            <!-- Admin Comments Row -->
-                            <div>
-                                <span class="text-muted small d-block mb-2">Admin Comments / Updates</span>
-                                <div class="admin-comment-box">
-                                    <i class="fa-regular fa-comment text-primary"></i>
-                                    <span>
-                                        @if (string.IsNullOrWhiteSpace(item.AdminComments))
+
+                            <!-- Chat / Conversation Thread Section (WhatsApp Style) --!>
+                            <div class="mt-4">
+                                <span class="text-muted small d-block mb-2">Ticket Conversation History</span>
+                                
+                                <div class="p-3 rounded-4 bg-light border mb-3 shadow-sm" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                                    
+                                    <!-- Paparan Asal Admin Comments (jika ada yang belum masuk thread) -->
+                                    @if (!string.IsNullOrWhiteSpace(item.AdminComments) && string.IsNullOrWhiteSpace(item.UserReply))
+                                    {
+                                        <div class="d-flex align-items-start gap-2">
+                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; min-width: 32px;">
+                                                <i class="fa-solid fa-headset" style="font-size: 0.85rem;"></i>
+                                            </div>
+                                            <div class="bg-white p-3 rounded-3 shadow-sm border" style="max-width: 80%;">
+                                                <strong class="small text-primary d-block mb-1">MIS Admin</strong>
+                                                <span class="text-dark" style="font-size: 0.95rem;">@item.AdminComments</span>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <!-- Bubble Chat -->
+                                    @if (!string.IsNullOrWhiteSpace(item.UserReply))
+                                    {
+                                        var messages = item.UserReply.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                                        foreach (var msg in messages)
                                         {
-                                            <em class="text-muted">- No comment yet -</em>
+                                            bool isAdmin = msg.StartsWith("[Admin");
+                                            bool isUser = msg.StartsWith("[You");
+
+                                            string cleanMsg = msg;
+                                            string timeStr = "";
+                                            if (msg.Contains("]"))
+                                            {
+                                                var parts = msg.Split(new[] { ']' }, 2);
+                                                timeStr = parts[0].Trim('[');
+                                                cleanMsg = parts.Length > 1 ? parts[1].Trim() : msg;
+                                            }
+
+                                            if (isAdmin)
+                                            {
+                                                <!-- Bubble Admin(Left)-->
+                                                <div class="d-flex align-items-start gap-2">
+                                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; min-width: 32px;">
+                                                        <i class="fa-solid fa-headset" style="font-size: 0.85rem;"></i>
+                                                    </div>
+                                                    <div class="bg-white p-3 rounded-3 shadow-sm border" style="max-width: 80%;">
+                                                        <div class="d-flex justify-content-between align-items-center gap-3 mb-1">
+                                                            <strong class="small text-primary">MIS Admin</strong>
+                                                            <span class="text-muted" style="font-size: 0.7rem;">@timeStr</span>
+                                                        </div>
+                                                        <span class="text-dark" style="font-size: 0.95rem; word-break: break-word;">@cleanMsg</span>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (isUser)
+                                            {
+                                                <!-- Bubble User (Right) -->
+                                                <div class="d-flex align-items-start gap-2 justify-content-end">
+                                                    <div class="bg-primary text-white p-3 rounded-3 shadow-sm" style="max-width: 80%; background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);">
+                                                        <div class="d-flex justify-content-between align-items-center gap-3 mb-1">
+                                                            <strong class="small text-white-50">You (Employee)</strong>
+                                                            <span class="text-white-50" style="font-size: 0.7rem;">@timeStr</span>
+                                                        </div>
+                                                        <span class="text-white" style="font-size: 0.95rem; word-break: break-word;">@cleanMsg</span>
+                                                    </div>
+                                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; min-width: 32px;">
+                                                        <i class="fa-solid fa-user" style="font-size: 0.85rem;"></i>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <!-- Fallback jika format lama -->
+                                                <div class="bg-white p-2 rounded border text-dark">@msg</div>
+                                            }
                                         }
-                                        else
-                                        {
-                                            @item.AdminComments
-                                        }
-                                    </span>
+                                    }
                                 </div>
+
+                                <!-- Borang User Reply -->
+                                <form asp-action="SubmitUserReply" method="post" class="mt-2">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <div class="input-group">
+                                        <input type="text" name="userReply" class="form-control form-control-sm rounded-start-pill px-3 py-2" placeholder="Type your reply to admin..." required />
+                                        <button type="submit" class="btn btn-sm btn-primary rounded-end-pill px-4 fw-bold">
+                                            <i class="fa-solid fa-paper-plane me-1"></i> Send Reply
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
 
                         </div>
@@ -405,5 +574,28 @@
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+function goBackToDashboard() {
+    // 1. Remove active-form
+    document.querySelectorAll('.form-container').forEach(el => {
+        el.classList.remove('active-form');
+    });
+
+    // 2. Safe check untuk selection-dashboard
+    const dashboard = document.getElementById('selection-dashboard');
+    if (dashboard) {
+        dashboard.style.display = 'flex';
+    }
+
+    // 3. Safe check untuk landing-extra
+    const landingExtra = document.getElementById('landing-extra');
+    if (landingExtra) {
+        landingExtra.style.display = 'block';
+    }
+
+    // 4. Scroll ke atas
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+    </script>
 </body>
 </html>
