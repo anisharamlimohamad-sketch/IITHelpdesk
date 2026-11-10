@@ -21,8 +21,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" />
     <style>
-        body { background: #f3f4f9; font-family: 'Plus Jakarta Sans', sans-serif; color: #1e293b; }
-        .top-navbar { background: #1e1b4b; color: #fff; padding: 14px 24px; }
+        body { 
+            background: #f3f4f9; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: #1e293b; 
+        }
+
+        .top-navbar { 
+            background: #1e1b4b; 
+            color: #fff; 
+            padding: 14px 24px; 
+        }
         
         .dashboard-card { 
             background: #ffffff; 
@@ -36,12 +45,54 @@
             overflow: hidden;
         }
         
-        .card-body-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-        .info-item { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 10px; padding: 10px 12px; }
-        .progress-step { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; display: inline-block; position: relative; z-index: 2; }
-        .progress-step.active { background: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-        .progress-line-bar { position: absolute; top: 50%; left: 8%; right: 8%; height: 2px; background: #e2e8f0; transform: translateY(-50%); z-index: 1; }
-        .badge-counter { background: #f1f5f9; color: #475569; font-weight: 600; font-size: 11px; padding: 3px 8px; border-radius: 20px; }
+        .card-body-content { 
+            padding: 20px; 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        .info-item { 
+            background: #ffffff; 
+            border: 1px solid #f1f5f9; 
+            border-radius: 10px; 
+            padding: 10px 12px; 
+        }
+
+        .progress-step { 
+            width: 12px; 
+            height: 12px; 
+            border-radius: 50%; 
+            background: #cbd5e1; 
+            display: inline-block; 
+            position: relative; 
+            z-index: 2; 
+        }
+
+        .progress-step.active { 
+            background: #2563eb; 
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); 
+        }
+
+        .progress-line-bar { 
+            position: absolute; 
+            top: 50%; 
+            left: 8%; 
+            right: 8%; 
+            height: 2px; 
+            background: #e2e8f0; 
+            transform: translateY(-50%); 
+            z-index: 1; 
+        }
+
+        .badge-counter { 
+            background: #f1f5f9; 
+            color: #475569; 
+            font-weight: 600; 
+            font-size: 11px; 
+            padding: 3px 8px; 
+            border-radius: 20px; 
+        }
         
         /* WhatsApp Chat Background & Bubbles */
         .whatsapp-bg {
@@ -283,7 +334,7 @@
                                     }
 
                                     <div class="d-flex align-items-start gap-2 mb-3 position-relative" style="z-index: 2;">
-                                        <!-- Avatar Bulatan Inisial Staf -->
+                                      
                                         <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm" style="width: 32px; height: 32px; font-size: 11px; border: 2px solid #fff;">
                                             @initials
                                         </div>
