@@ -28,8 +28,7 @@ namespace ItHelpdesk.Controllers
             {
                 Incidents = DataStore.Incidents,
                 MisRequests = DataStore.MisRequests,
-                // Jika DataStore simpan action logs secara global, boleh bind di sini:
-                // ActionLogs = DataStore.ActionLogs 
+
             };
 
             // Guna path Views/Helpdesk
@@ -64,7 +63,6 @@ namespace ItHelpdesk.Controllers
                 }
             }
 
-            // Jika dipanggil melalui fetch/AJAX, pulangkan status OK (200)
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || Request.Headers["Accept"].ToString().Contains("json"))
             {
                 return Ok();
@@ -84,7 +82,6 @@ namespace ItHelpdesk.Controllers
             return RedirectToAction("AdminDashboard");
         }
 
-        // Method AddActionLog dipindahkan KE DALAM Controller dengan betul
         [HttpPost]
         public IActionResult AddActionLog(string incidentId, string staffName, string notes)
         {
@@ -109,14 +106,12 @@ namespace ItHelpdesk.Controllers
         [HttpGet]
         public IActionResult TicketDetails(string id)
         {
-            // Cari incident berdasarkan ID daripada DataStore
             var incident = DataStore.Incidents.FirstOrDefault(i => i.Id == id);
             if (incident == null)
             {
                 return NotFound();
             }
 
-            // Hantar model incident ke view baharu
             return View("~/Views/Helpdesk/TicketDetails.cshtml", incident);
         }
     }

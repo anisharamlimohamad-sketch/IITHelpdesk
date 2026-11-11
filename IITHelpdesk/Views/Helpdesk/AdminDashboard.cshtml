@@ -728,52 +728,53 @@
         </button>
         </div>
 
-                             <!-- ========================================== -->
-                             <!-------------- STATUS OVERVIEW ----------------->
-                             <!-- ========================================== -->
+        <!-- ========================================== -->
+        <!-------------- STATUS OVERVIEW ----------------->
+        <!-- ========================================== -->
 
-                        <div class="status-overview-card">
-                            <h6 class="fw-bold mb-1" style="font-size: 13px;">Status overview</h6>
-                            <div class="progress-multi">
-                                <div class="bar-seg" style="width: @GetPct(newCount)%; background: var(--new);"></div>
-                                <div class="bar-seg" style="width: @GetPct(penCount)%; background: var(--pen);"></div>
-                                <div class="bar-seg" style="width: @GetPct(asgCount)%; background: var(--asg);"></div>
-                                <div class="bar-seg" style="width: @GetPct(invCount)%; background: var(--inv);"></div>
-                                <div class="bar-seg" style="width: @GetPct(resCount)%; background: var(--res);"></div>
-                                <div class="bar-seg" style="width: @GetPct(cloCount)%; background: var(--clo);"></div>
-                            </div>
+        <div class="status-overview-card">
+           <h6 class="fw-bold mb-1" style="font-size: 13px;">Status overview</h6>
+           <div class="progress-multi">
+              <div class="bar-seg" style="width: @GetPct(newCount)%; background: var(--new);"></div>
+              <div class="bar-seg" style="width: @GetPct(penCount)%; background: var(--pen);"></div>
+              <div class="bar-seg" style="width: @GetPct(asgCount)%; background: var(--asg);"></div>
+              <div class="bar-seg" style="width: @GetPct(invCount)%; background: var(--inv);"></div>
+              <div class="bar-seg" style="width: @GetPct(resCount)%; background: var(--res);"></div>
+              <div class="bar-seg" style="width: @GetPct(cloCount)%; background: var(--clo);"></div>
+           </div>
 
 
-                            <div class="status-row">
-                                <span class="dot-label"><span class="dot" style="background: var(--new);"></span> New</span>
-                                <div><span class="me-3">@newCount</span><span class="text-muted">@GetPct(newCount)%</span></div>
-                            </div>
-                            <div class="status-row">
-                                <span class="dot-label"><span class="dot" style="background: var(--pen);"></span> Pending</span>
-                                <div><span class="me-3">@penCount</span><span class="text-muted">@GetPct(penCount)%</span></div>
-                            </div>
+           <div class="status-row">
+              <span class="dot-label"><span class="dot" style="background: var(--new);"></span> New</span>
+              <div><span class="me-3">@newCount</span><span class="text-muted">@GetPct(newCount)%</span></div>
+           </div>
 
-                            <div class="status-row">
-                                <span class="dot-label"><span class="dot" style="background: var(--asg);"></span> Assigned</span>
-                                <div><span class="me-3">@asgCount</span><span class="text-muted">@GetPct(asgCount)%</span></div>
-                            </div>
+           <div class="status-row">
+              <span class="dot-label"><span class="dot" style="background: var(--pen);"></span> Pending</span>
+              <div><span class="me-3">@penCount</span><span class="text-muted">@GetPct(penCount)%</span></div>
+           </div>
 
-                            <div class="status-row">
-                                <span class="dot-label"><span class="dot" style="background: var(--inv);"></span> Investigating</span>
-                                <div><span class="me-3">@invCount</span><span class="text-muted">@GetPct(invCount)%</span></div>
-                            </div>
+           <div class="status-row">
+              <span class="dot-label"><span class="dot" style="background: var(--asg);"></span> Assigned</span>
+              <div><span class="me-3">@asgCount</span><span class="text-muted">@GetPct(asgCount)%</span></div>
+           </div>
 
-                            <div class="status-row">
-                                <span class="dot-label"><span class="dot" style="background: var(--res);"></span> Resolved</span>
-                                <div><span class="me-3">@resCount</span><span class="text-muted">@GetPct(resCount)%</span></div>
-                            </div>
+           <div class="status-row">
+              <span class="dot-label"><span class="dot" style="background: var(--inv);"></span> Investigating</span>
+              <div><span class="me-3">@invCount</span><span class="text-muted">@GetPct(invCount)%</span></div>
+           </div>
 
-                            <div class="status-row mb-0">
-                                <span class="dot-label"><span class="dot" style="background: var(--clo);"></span> Closed</span>
-                                <div><span class="me-3">@cloCount</span><span class="text-muted">@GetPct(cloCount)%</span></div>
-                            </div>
-                        </div>
-                    </div>
+           <div class="status-row">
+              <span class="dot-label"><span class="dot" style="background: var(--res);"></span> Resolved</span>
+              <div><span class="me-3">@resCount</span><span class="text-muted">@GetPct(resCount)%</span></div>
+           </div>
+
+           <div class="status-row mb-0">
+               <span class="dot-label"><span class="dot" style="background: var(--clo);"></span> Closed</span>
+               <div><span class="me-3">@cloCount</span><span class="text-muted">@GetPct(cloCount)%</span></div>
+           </div>
+        </div>
+      </div>
 
 
         <!-- ========================================== -->
@@ -814,6 +815,7 @@
         </thead>
 
         <tbody>
+
         @if (sortedIncidents.Any())
         {
         for (int i = 0; i < sortedIncidents.Count; i++)
@@ -831,10 +833,8 @@
         <td class="row-number text-muted">@(i + 1)</td>
         
         <td>
-           <div class="ticket-meta">
-           <!-- 1) Papar Nombor Tiket (ID Baharu yyyymmdd-01) -->
+           <div class="ticket-meta">      
            <b class="text-primary">@item.Id</b>
-           <!-- 2) Papar maklumat Employee ID & Asset Name di bawahnya -->
            <small class="text-muted d-block">@item.EmployeeId · @item.AssetName</small>
            </div>
         </td>
