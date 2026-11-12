@@ -1,4 +1,7 @@
-﻿@model ItHelpdesk.Models.IncidentReportViewModel
+﻿@using ITHelpdesk
+@using ITHelpdesk.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model ItHelpdesk.Models.IncidentReportViewModel
 
 @{
     ViewData["Title"] = "Ticket #" + Model.Id;
@@ -436,6 +439,7 @@ else if (activeTab == "logs")
 </main>
 
 <script>
+// Fungsi hantar mesej (Admin kirim mesej)
 function sendAdminMessage(event, ticketId) {
     event.preventDefault();
     const inputField = document.getElementById('chatCommentInput');
@@ -451,15 +455,52 @@ function sendAdminMessage(event, ticketId) {
         method: 'POST',
         body: formData
     }).then(response => {
-        if (response.ok) { location.reload(); }
-        else { alert("Failed to send message."); }
+        if (response.ok) {
+            inputField.value = ''; // Kosongkan input selepas hantar
+            fetchLatestMessages(ticketId); // Terus muat semula chat
+        } else {
+            alert("Failed to send message.");
+        }
     });
 }
 
+// Fungsi untuk ambil mesej terkini tanpa refresh seluruh halaman
+function fetchLatestMessages(ticketId) {
+    // Anda boleh bina satu Action kecil di Controller yang mengembalikan bahagian HTML chat sahaja
+    fetch('@Url.Action("GetChatMessages", "AdminDashboard")?id=' + ticketId)
+        .then(response => response.text())
+        .then(html => {
+            const wall = document.getElementById('wall');
+            if (wall) {
+                // Simpan kedudukan scroll semasa supaya ia tak mengganggu pengguna membaca
+                const isAtBottom = wall.scrollHeight - wall.scrollTop <= wall.clientHeight + 50;
+                
+                wall.innerHTML = html; // Kemas kini bahagian dinding chat
+
+                // Auto scroll ke bawah jika pengguna memang berada di bawah
+                if (isAtBottom) {
+                    wall.scrollTop = wall.scrollHeight;
+                }
+            }
+        })
+        .catch(error => console.error('Error fetching messages:', error));
+}
+
+// Auto-Refresh setiap 4 saat (Real-time Polling)
+setInterval(() => {
+    // Dapatkan ID tiket semasa dari model
+    const currentTicketId = '@Model.Id';
+    if (currentTicketId) {
+        fetchLatestMessages(currentTicketId);
+    }
+}, 4000); // 4000 milisaat = 4 saat
+
+// Scroll ke bawah semasa mula-mula buka halaman
 window.addEventListener('DOMContentLoaded', () => {
     const wall = document.getElementById('wall');
     if (wall) { wall.scrollTop = wall.scrollHeight; }
 });
+</script>
 </script>
 </body>
 </html>

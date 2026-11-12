@@ -114,6 +114,71 @@ namespace ItHelpdesk.Controllers
 
             return View("~/Views/Helpdesk/TicketDetails.cshtml", incident);
         }
+        [HttpGet]
+        public IActionResult GetChatMessages(string id)
+        {
+            var incident = DataStore.Incidents.FirstOrDefault(i => i.Id == id);
+            if (incident == null)
+            {
+                return NotFound();
+            }
+
+            // Menjana semula paparan HTML mesej chat secara langsung untuk dihantar ke JavaScript (AJAX)
+            string htmlContent = "";
+
+            if (string.IsNullOrWhiteSpace(incident.UserReply))
+            {
+                htmlContent = @"<div style=""flex: 1; display: grid; place-items: center; text-align: center; color: var(--muted);"">
+                                <div>
+                                    <i class=""fa-regular fa-comment-dots fs-3 mb-2 text-primary""></i>
+                                    <div style=""font-weight: 600; color: var(--text);"">No messages yet</div>
+                                    <div style=""font-size: 12px;"">Say hello to start the conversation.</div>
+                                </div>
+                              </div>";
+            }
+            else
+            {
+                htmlContent += @"<div style=""text-align: center; margin: 8px 0 16px 0;"">
+                                    <span style=""background: #fff; padding: 4px 12px; border-radius: 8px; font-size: 11px; color: #54656f; box-shadow: 0 1px 1px rgba(0,0,0,0.05);"">Today</span>
+                                  </div>";
+
+                var messages = incident.UserReply.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var msg in messages)
+                {
+                    bool isAdmin = msg.StartsWith("[Admin");
+                    string cleanMsg = msg;
+                    string timeOnly = DateTime.Now.ToString("HH:mm");
+
+                    int bracketIndex = msg.IndexOf("] ");
+                    if (bracketIndex != -1 && msg.StartsWith("["))
+                    {
+                        string headerPart = msg.Substring(1, bracketIndex - 1);
+                        if (headerPart.Contains(" "))
+                        {
+                            var parts = headerPart.Split(' ');
+                            if (parts.Length > 1) { timeOnly = parts[parts.Length - 1]; }
+                        }
+                        cleanMsg = msg.Substring(bracketIndex + 2);
+                    }
+
+                    string bubbleClass = isAdmin ? "chat-bubble-out" : "chat-bubble-in";
+
+                    htmlContent += $@"<div class=""{bubbleClass}"">
+                                        <span>{cleanMsg}</span>
+                                        <span class=""chat-time"">
+                                            {timeOnly}";
+
+                    if (isAdmin)
+                    {
+                        htmlContent += @"<i class=""fa-solid fa-check-double"" style=""color: #53bdeb; font-size: 9px; margin-left: 2px;""></i>";
+                    }
+
+                    htmlContent += "</span></div>";
+                }
+            }
+
+            return Content(htmlContent, "text/html");
+        }
     }
 
     public class AdminDashboardTuple

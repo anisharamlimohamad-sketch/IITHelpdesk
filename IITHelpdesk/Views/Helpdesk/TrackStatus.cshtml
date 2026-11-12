@@ -303,23 +303,23 @@
 </head>
 <body>
 
-   <!-- ========================================== -->
-   <!---------------- HERO HEADER ------------------->
-   <!-- ========================================== -->
+ <!-- ========================================== -->
+ <!---------------- HERO HEADER ------------------->
+ <!-- ========================================== -->
 
-    <div class="hero-section">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <div class="header-logo-box">
-                    <i class="fa-solid fa-headset fa-lg"></i>
-                </div>
-                <h2 class="fw-bold mb-0 text-white">MIS Helpdesk</h2>
-            </div>
-        <a asp-controller="AdminLogin" asp-action="Login" class="btn-admin-login">
-            <i class="fa-solid fa-lock me-2"></i>Admin login
-        </a>
-        </div>
-    </div>
+ <div class="hero-section">
+      <div class="container d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-3">
+              <div class="header-logo-box">
+                  <i class="fa-solid fa-headset fa-lg"></i>
+              </div>
+              <h2 class="fw-bold mb-0 text-white">MIS Helpdesk</h2>
+          </div>
+      <a asp-controller="AdminLogin" asp-action="Login" class="btn-admin-login">
+          <i class="fa-solid fa-lock me-2"></i>Admin login
+      </a>
+      </div>
+  </div>
 
     <div class="container pb-5" style="position: relative; z-index: 10;">
         <div class="track-card">
@@ -339,263 +339,318 @@
                 Check the real-time progress of your ticket without contacting the IT team.
             </p>
 
-            <!-- Search Form -->
-            <form asp-action="TrackStatus" method="get" class="mb-2">
-                <div class="d-flex gap-3 mb-2">
-                    <div class="search-group-custom">
-                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                        <input type="text" name="searchQuery" value="@ViewData["Query"]" class="input-search-custom" placeholder="Input Employee ID or Asset Name..." required />
-                    </div>
-                    <button type="submit" class="btn-search-purple">Search</button>
-                </div>
-                <p class="text-muted small mb-4">Use the Employee ID or Asset Name you entered when submitting your ticket.</p>
-            </form>
+<!-- Search Form -->
+<form asp-action="TrackStatus" method="get" class="mb-2">
+    <div class="d-flex gap-3 mb-2">
+       <div class="search-group-custom">
+           <i class="fa-solid fa-magnifying-glass search-icon"></i>
+             <input type="text" name="searchQuery" value="@ViewData["Query"]" class="input-search-custom" placeholder="Input Employee ID or Asset Name..." required />
+       </div>
+        <button type="submit" class="btn-search-purple">Search</button>
+    </div>
+    <p class="text-muted small mb-4">Use the Employee ID or Asset Name you entered when submitting your ticket.</p>
+</form>
 
-            <!-- Results Section -->
-            @if (Model != null && Model.Any())
-            {
-                <div class="d-flex flex-column gap-4">
-                    @foreach (var item in Model)
-                    {
-                        var status = item.Status ?? "New";
-
-                        bool isSubmittedDone = (status != "New");
-                        bool isSubmittedActive = (status == "New");
-
-                        bool isAssignedDone = (status == "Investigating" || status == "Resolved" || status == "Closed");
-                        bool isAssignedActive = (status == "Assigned" || status == "Pending");
-
-                        bool isInvestigatingDone = (status == "Resolved" || status == "Closed");
-                        bool isInvestigatingActive = (status == "Investigating");
-
-                        bool isResolvedDone = (status == "Resolved" || status == "Closed");
-
-                        <div class="ticket-result-card">
+<!-- Results Section -->
+@if (Model != null && Model.Any())
+{
+    <div class="d-flex flex-column gap-4">
+        @foreach (var item in Model)
+        {
+          var status = item.Status ?? "New";
+          bool isSubmittedDone = (status != "New");
+          bool isSubmittedActive = (status == "New");
+          bool isAssignedDone = (status == "Investigating" || status == "Resolved" || status == "Closed");
+          bool isAssignedActive = (status == "Assigned" || status == "Pending");
+          bool isInvestigatingDone = (status == "Resolved" || status == "Closed");
+          bool isInvestigatingActive = (status == "Investigating");
+          bool isResolvedDone = (status == "Resolved" || status == "Closed");
+          
+    <div class="ticket-result-card">
                             
-                            <!-- Card Header Row with Status Badge -->
-                            <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
-                                <span class="fw-bold text-dark">Ticket Status</span>
-                                <div>
-                                    @if (status == "New")
-                                    {
-                                        <span class="badge-status-pill badge-status-new"><i class="fa-solid fa-star fa-2xs"></i> New</span>
-                                    }
-                                    else if (status == "Assigned")
-                                    {
-                                        <span class="badge-status-pill badge-status-assigned"><i class="fa-solid fa-user-check fa-2xs"></i> Assigned</span>
-                                    }
-                                    else if (status == "Pending")
-                                    {
-                                        <span class="badge-status-pill badge-status-pending"><i class="fa-regular fa-clock fa-2xs"></i> Pending</span>
-                                    }
-                                    else if (status == "Investigating")
-                                    {
-                                        <span class="badge-status-pill badge-status-investigating"><i class="fa-solid fa-magnifying-glass fa-2xs"></i> Investigating</span>
-                                    }
-                                    else if (status == "Resolved")
-                                    {
-                                        <span class="badge-status-pill badge-status-resolved"><i class="fa-solid fa-check fa-2xs"></i> Resolved</span>
-                                    }
-                                    else if (status == "Closed")
-                                    {
-                                        <span class="badge-status-pill badge-status-closed"><i class="fa-solid fa-lock fa-2xs"></i> Closed</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge-status-pill badge-status-pending"><i class="fa-regular fa-clock fa-2xs"></i> @status</span>
-                                    }
-                                </div>
-                            </div>
+    <!-- Card Header Row with Status Badge -->
+    <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+      <span class="fw-bold text-dark">Ticket Status</span>
+    <div>
+       @if (status == "New")
+       {
+           <span class="badge-status-pill badge-status-new"><i class="fa-solid fa-star fa-2xs"></i> New</span>
+       }
+       else if (status == "Assigned")
+       {
+           <span class="badge-status-pill badge-status-assigned"><i class="fa-solid fa-user-check fa-2xs"></i> Assigned</span>
+       }
+       else if (status == "Pending")
+       {
+           <span class="badge-status-pill badge-status-pending"><i class="fa-regular fa-clock fa-2xs"></i> Pending</span>
+       }
+       else if (status == "Investigating")
+       {
+           <span class="badge-status-pill badge-status-investigating"><i class="fa-solid fa-magnifying-glass fa-2xs"></i> Investigating</span>
+       }
+       else if (status == "Resolved")
+       {
+           <span class="badge-status-pill badge-status-resolved"><i class="fa-solid fa-check fa-2xs"></i> Resolved</span>
+       }
+       else if (status == "Closed")
+       {
+           <span class="badge-status-pill badge-status-closed"><i class="fa-solid fa-lock fa-2xs"></i> Closed</span>
+       }
+       else
+       {
+           <span class="badge-status-pill badge-status-pending"><i class="fa-regular fa-clock fa-2xs"></i> @status</span>
+       }
+    </div>
+  </div>
 
-                            <!-- Step Progress Bar -->
-                            <div class="progress-step-container">
-                                <div class="progress-step-line"></div>
+  <!-- Step Progress Bar -->
+  <div class="progress-step-container">
+  <div class="progress-step-line"></div>
 
-                                <!-- Step 1: Submitted -->
-                                <div class="step-point">
-                                    <div class="step-circle @(isSubmittedDone ? "completed" : (isSubmittedActive ? "active" : ""))">
-                                        <i class="fa-solid fa-check"></i>
-                                    </div>
-                                    <div class="step-label @(isSubmittedDone ? "completed" : (isSubmittedActive ? "active" : ""))">Submitted</div>
-                                </div>
+  <!-- Step 1: Submitted -->
+  <div class="step-point">
+  <div class="step-circle @(isSubmittedDone ? "completed" : (isSubmittedActive ? "active" : ""))">
+    <i class="fa-solid fa-check"></i>
+  </div>
+  <div class="step-label @(isSubmittedDone ? "completed" : (isSubmittedActive ? "active" : ""))">Submitted</div>
+  </div>
 
-                                <!-- Step 2: Assigned -->
-                                <div class="step-point">
-                                    <div class="step-circle @(isAssignedDone ? "completed" : (isAssignedActive ? "active" : ""))">
-                                        <i class="fa-solid fa-user-check"></i>
-                                    </div>
-                                    <div class="step-label @(isAssignedDone ? "completed" : (isAssignedActive ? "active" : ""))">Assigned</div>
-                                </div>
+  <!-- Step 2: Assigned -->
+  <div class="step-point">
+  <div class="step-circle @(isAssignedDone ? "completed" : (isAssignedActive ? "active" : ""))">
+    <i class="fa-solid fa-user-check"></i>
+  </div>
+  <div class="step-label @(isAssignedDone ? "completed" : (isAssignedActive ? "active" : ""))">Assigned</div>
+  </div>
 
-                                <!-- Step 3: Investigating -->
-                                <div class="step-point">
-                                    <div class="step-circle @(isInvestigatingDone ? "completed" : (isInvestigatingActive ? "active" : ""))">
-                                        <i class="fa-solid fa-magnifying-glass"></i>
-                                    </div>
-                                    <div class="step-label @(isInvestigatingDone ? "completed" : (isInvestigatingActive ? "active" : ""))">Investigating</div>
-                                </div>
+  <!-- Step 3: Investigating -->
+  <div class="step-point">
+  <div class="step-circle @(isInvestigatingDone ? "completed" : (isInvestigatingActive ? "active" : ""))">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </div>
+  <div class="step-label @(isInvestigatingDone ? "completed" : (isInvestigatingActive ? "active" : ""))">Investigating</div>
+  </div>
 
-                                <!-- Step 4: Resolved / Closed -->
-                                <div class="step-point">
-                                    <div class="step-circle @(isResolvedDone ? "completed" : "")">
-                                        <i class="fa-solid fa-flag-checkered"></i>
-                                    </div>
-                                    <div class="step-label @(isResolvedDone ? "completed" : "")">Resolved</div>
-                                </div>
-                            </div>
+  <!-- Step 4: Resolved / Closed -->
+  <div class="step-point">
+  <div class="step-circle @(isResolvedDone ? "completed" : "")">
+    <i class="fa-solid fa-flag-checkered"></i>
+  </div>
+  <div class="step-label @(isResolvedDone ? "completed" : "")">Resolved</div>
+  </div>
+  </div>
 
-                            <!-- Details Row -->
-                            <div class="row g-4 mb-3">
-                                <div class="col-md-4">
-                                    <span class="text-muted small d-block mb-1">Employee ID</span>
-                                    <h6 class="fw-bold text-dark mb-0">@(string.IsNullOrEmpty(item.EmployeeId) ? "-" : item.EmployeeId)</h6>
-                                </div>
-                                <div class="col-md-4">
-                                    <span class="text-muted small d-block mb-1">Asset Name</span>
-                                    <h6 class="fw-bold text-dark mb-0">@(string.IsNullOrEmpty(item.AssetName) ? "-" : item.AssetName)</h6>
-                                </div>
-                                <div class="col-md-4">
-                                    <span class="text-muted small d-block mb-1">Department</span>
-                                    <h6 class="fw-bold text-dark mb-0">@(string.IsNullOrEmpty(item.Department) ? "-" : item.Department)</h6>
-                                </div>
-                            </div>
+  <!-- Details Row -->
+  <div class="row g-4 mb-3">
+  <div class="col-md-4">
+    <span class="text-muted small d-block mb-1">Employee ID</span>
+    <h6 class="fw-bold text-dark mb-0">@(string.IsNullOrEmpty(item.EmployeeId) ? "-" : item.EmployeeId)</h6>
+  </div>
+  <div class="col-md-4">
+    <span class="text-muted small d-block mb-1">Asset Name</span>
+    <h6 class="fw-bold text-dark mb-0">@(string.IsNullOrEmpty(item.AssetName) ? "-" : item.AssetName)</h6>
+  </div>
+  <div class="col-md-4">
+    <span class="text-muted small d-block mb-1">Department</span>
+    <h6 class="fw-bold text-dark mb-0">@(string.IsNullOrEmpty(item.Department) ? "-" : item.Department)</h6>
+  </div>
+  </div>
 
-                            <!-- Problem Description -->
-                            <div class="mb-4">
-                                <span class="text-muted small d-block mb-1">Problem</span>
-                                <h6 class="fw-bold text-dark mb-0">@item.ProblemDescription</h6>
-                            </div>
+  <!-- Problem Description -->
+  <div class="mb-4">
+    <span class="text-muted small d-block mb-1">Problem</span>
+    <h6 class="fw-bold text-dark mb-0">@item.ProblemDescription</h6>
+  </div>
 
 
-                            <!-- Chat / Conversation Thread Section (WhatsApp Style) --!>
-                            <div class="mt-4">
-                                <span class="text-muted small d-block mb-2">Ticket Conversation History</span>
-                                
-                                <div class="p-3 rounded-4 bg-light border mb-3 shadow-sm" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+  <!-- Chat / Conversation Thread Section (WhatsApp Style) --!>
+  <div class="mt-4">
+    <span class="text-muted small d-block mb-2">Ticket Conversation History</span>
+      
+  <div class="p-3 rounded-4 bg-light border mb-3 shadow-sm" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
                                     
-                                    <!-- Paparan Asal Admin Comments (jika ada yang belum masuk thread) -->
-                                    @if (!string.IsNullOrWhiteSpace(item.AdminComments) && string.IsNullOrWhiteSpace(item.UserReply))
-                                    {
-                                        <div class="d-flex align-items-start gap-2">
-                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; min-width: 32px;">
-                                                <i class="fa-solid fa-headset" style="font-size: 0.85rem;"></i>
-                                            </div>
-                                            <div class="bg-white p-3 rounded-3 shadow-sm border" style="max-width: 80%;">
-                                                <strong class="small text-primary d-block mb-1">MIS Admin</strong>
-                                                <span class="text-dark" style="font-size: 0.95rem;">@item.AdminComments</span>
-                                            </div>
-                                        </div>
-                                    }
+  <!-- Paparan Asal Admin Comments (jika ada yang belum masuk thread) -->
+  @if (!string.IsNullOrWhiteSpace(item.AdminComments) && string.IsNullOrWhiteSpace(item.UserReply))
+  {
+  <div class="d-flex align-items-start gap-2">
+  <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; min-width: 32px;">
+    <i class="fa-solid fa-headset" style="font-size: 0.85rem;"></i>
+  </div>
+  <div class="bg-white p-3 rounded-3 shadow-sm border" style="max-width: 80%;">
+    <strong class="small text-primary d-block mb-1">MIS Admin</strong>
+    <span class="text-dark" style="font-size: 0.95rem;">@item.AdminComments</span>
+  </div>
+  </div>
+  }
 
-                                    <!-- Bubble Chat -->
-                                    @if (!string.IsNullOrWhiteSpace(item.UserReply))
-                                    {
-                                        var messages = item.UserReply.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                                        foreach (var msg in messages)
-                                        {
-                                            bool isAdmin = msg.StartsWith("[Admin");
-                                            bool isUser = msg.StartsWith("[You");
+  <!-- Bubble Chat -->
+  @if (!string.IsNullOrWhiteSpace(item.UserReply))
+  {
+    var messages = item.UserReply.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+    foreach (var msg in messages)
+    {
+        bool isAdmin = msg.StartsWith("[Admin");
+        bool isUser = msg.StartsWith("[You");
 
-                                            string cleanMsg = msg;
-                                            string timeStr = "";
-                                            if (msg.Contains("]"))
-                                            {
-                                                var parts = msg.Split(new[] { ']' }, 2);
-                                                timeStr = parts[0].Trim('[');
-                                                cleanMsg = parts.Length > 1 ? parts[1].Trim() : msg;
-                                            }
+        string cleanMsg = msg;
+        string timeStr = "";
+    if (msg.Contains("]"))
+    {
+        var parts = msg.Split(new[] { ']' }, 2);
+        timeStr = parts[0].Trim('[');
+        cleanMsg = parts.Length > 1 ? parts[1].Trim() : msg;
+    }
 
-                                            if (isAdmin)
-                                            {
-                                                <!-- Bubble Admin(Left)-->
-                                                <div class="d-flex align-items-start gap-2">
-                                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; min-width: 32px;">
-                                                        <i class="fa-solid fa-headset" style="font-size: 0.85rem;"></i>
-                                                    </div>
-                                                    <div class="bg-white p-3 rounded-3 shadow-sm border" style="max-width: 80%;">
-                                                        <div class="d-flex justify-content-between align-items-center gap-3 mb-1">
-                                                            <strong class="small text-primary">MIS Admin</strong>
-                                                            <span class="text-muted" style="font-size: 0.7rem;">@timeStr</span>
-                                                        </div>
-                                                        <span class="text-dark" style="font-size: 0.95rem; word-break: break-word;">@cleanMsg</span>
-                                                    </div>
-                                                </div>
-                                            }
-                                            else if (isUser)
-                                            {
-                                                <!-- Bubble User (Right) -->
-                                                <div class="d-flex align-items-start gap-2 justify-content-end">
-                                                    <div class="bg-primary text-white p-3 rounded-3 shadow-sm" style="max-width: 80%; background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);">
-                                                        <div class="d-flex justify-content-between align-items-center gap-3 mb-1">
-                                                            <strong class="small text-white-50">You (Employee)</strong>
-                                                            <span class="text-white-50" style="font-size: 0.7rem;">@timeStr</span>
-                                                        </div>
-                                                        <span class="text-white" style="font-size: 0.95rem; word-break: break-word;">@cleanMsg</span>
-                                                    </div>
-                                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; min-width: 32px;">
-                                                        <i class="fa-solid fa-user" style="font-size: 0.85rem;"></i>
-                                                    </div>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <!-- Fallback jika format lama -->
-                                                <div class="bg-white p-2 rounded border text-dark">@msg</div>
-                                            }
-                                        }
-                                    }
-                                </div>
+    if (isAdmin)
+    {
+    
+    <!-- Bubble Admin(Left)-->
+    <div class="d-flex align-items-start gap-2">
+    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; min-width: 32px;">
+      <i class="fa-solid fa-headset" style="font-size: 0.85rem;"></i>
+    </div>
+    <div class="bg-white p-3 rounded-3 shadow-sm border" style="max-width: 80%;">
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-1">
+       <strong class="small text-primary">MIS Admin</strong>
+         <span class="text-muted" style="font-size: 0.7rem;">@timeStr</span>
+    </div>
+         <span class="text-dark" style="font-size: 0.95rem; word-break: break-word;">@cleanMsg</span>
+    </div>
+    </div>
+   }
+    else if (isUser)
+   {
+   <!-- Bubble User (Right) -->
+    <div class="d-flex align-items-start gap-2 justify-content-end">
+    <div class="bg-primary text-white p-3 rounded-3 shadow-sm" style="max-width: 80%; background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);">
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-1">
+        <strong class="small text-white-50">You (Employee)</strong>
+        <span class="text-white-50" style="font-size: 0.7rem;">@timeStr</span>
+    </div>
+        <span class="text-white" style="font-size: 0.95rem; word-break: break-word;">@cleanMsg</span>
+    </div>
+    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; min-width: 32px;">
+      <i class="fa-solid fa-user" style="font-size: 0.85rem;"></i>
+    </div>
+    </div>
+    }
+    else
+    {
+   <!-- Fallback jika format lama -->
+   <div class="bg-white p-2 rounded border text-dark">@msg</div>
+    }
+    }
+    }
+    </div>
 
-                                <!-- Borang User Reply -->
-                                <form asp-action="SubmitUserReply" method="post" class="mt-2">
-                                    <input type="hidden" name="id" value="@item.Id" />
-                                    <div class="input-group">
-                                        <input type="text" name="userReply" class="form-control form-control-sm rounded-start-pill px-3 py-2" placeholder="Type your reply to admin..." required />
-                                        <button type="submit" class="btn btn-sm btn-primary rounded-end-pill px-4 fw-bold">
-                                            <i class="fa-solid fa-paper-plane me-1"></i> Send Reply
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+    <!-- Borang User Reply dengan AJAX -->      
+    <form onsubmit="submitUserReplyForm(event, '@item.Id')" class="mt-2">   
+    <div class="input-group">
+       <input type="text" id="userReplyInput_@item.Id" class="form-control form-control-sm rounded-start-pill px-3 py-2" placeholder="Type your reply to admin..." required autocomplete="off" />
+    <button type="submit" class="btn btn-sm btn-primary rounded-end-pill px-4 fw-bold">
+        <i class="fa-solid fa-paper-plane me-1"></i> Send Reply
+    </button>
+    </div>
+    </form>
+    </div>
 
-                        </div>
-                    }
-                </div>
-            }
-            else if (ViewData["Query"] != null)
-            {
-                <div class="alert alert-warning rounded-4 p-4 mt-3" role="alert">
-                    <i class="fa-solid fa-triangle-exclamation me-2"></i> No incident or request records found matching <strong>"@ViewData["Query"]"</strong>.
-                </div>
-            }
+    </div>
+    }
+    </div>
+    }
+    else if (ViewData["Query"] != null)
+    {
+    <div class="alert alert-warning rounded-4 p-4 mt-3" role="alert">
+      <i class="fa-solid fa-triangle-exclamation me-2"></i> No incident or request records found matching <strong>"@ViewData["Query"]"</strong>.
+    </div>
+    }
 
-        </div>
+    </div>
     </div>
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-function goBackToDashboard() {
-    // 1. Remove active-form
-    document.querySelectorAll('.form-container').forEach(el => {
-        el.classList.remove('active-form');
+    function submitUserReplyForm(event, ticketId) {
+        event.preventDefault(); // PENTING: Halang page daripada refresh atau redirect
+        
+        const inputField = document.getElementById('userReplyInput_' + ticketId);
+        const replyText = inputField.value.trim();
+        if (!replyText) return;
+
+        const formData = new FormData();
+        formData.append('id', ticketId);
+        formData.append('userReply', replyText);
+
+        // Hantar ke TrackStatusController menggunakan AJAX
+        fetch('@Url.Action("SubmitUserReply", "TrackStatus")', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                inputField.value = ''; // Kosongkan ruangan teks
+                
+                // Cari kotak chat card semasa dan muat semula kandungannya serta-merta
+                const card = inputField.closest('.ticket-result-card');
+                const chatContainer = card ? card.querySelector('.p-3.rounded-4.bg-light.border') : null;
+                
+                if (chatContainer) {
+                    fetch('@Url.Action("GetTrackStatusChat", "TrackStatus")?id=' + ticketId)
+                        .then(res => res.text())
+                        .then(html => {
+                            chatContainer.innerHTML = html;
+                            chatContainer.scrollTop = chatContainer.scrollHeight;
+                        });
+                }
+            } else {
+                alert("Gagal menghantar balasan.");
+            }
+        })
+        .catch(err => console.error("Error:", err));
+    }
+
+    // --- Real-time Chat Polling untuk User Track Status ---
+    document.addEventListener("DOMContentLoaded", function () {
+        const ticketCards = document.querySelectorAll('.ticket-result-card');
+
+        ticketCards.forEach(card => {
+            const chatContainer = card.querySelector('.p-3.rounded-4.bg-light.border');
+            // Dapatkan ID tiket daripada elemen tersembunyi atau butang di dalam card
+            const formElement = card.querySelector('form');
+            
+            // Ekstrak ticketId daripada atribut onsubmit bentuk string 'submitUserReplyForm(event, \'ID_DI_SINI\')'
+            if (chatContainer && formElement) {
+                const onsubmitAttr = formElement.getAttribute('onsubmit');
+                const match = onsubmitAttr ? onsubmitAttr.match(/'([^']+)'/) : null;
+                const ticketId = match ? match[1] : null;
+
+                if (ticketId) {
+                    // Jalankan auto-refresh setiap 4 saat (4000ms)
+                    setInterval(() => {
+                        fetch('@Url.Action("GetTrackStatusChat", "TrackStatus")?id=' + ticketId)
+                            .then(response => response.text())
+                            .then(html => {
+                                const isAtBottom = chatContainer.scrollHeight - chatContainer.scrollTop <= chatContainer.clientHeight + 50;
+                                
+                                chatContainer.innerHTML = html;
+
+                                if (isAtBottom) {
+                                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                                }
+                            })
+                            .catch(err => console.error("Error updating chat:", err));
+                    }, 4000);
+
+                    // Auto-scroll ke bawah apabila mula-mula buka
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+            }
+        });
     });
-
-    // 2. Safe check untuk selection-dashboard
-    const dashboard = document.getElementById('selection-dashboard');
-    if (dashboard) {
-        dashboard.style.display = 'flex';
-    }
-
-    // 3. Safe check untuk landing-extra
-    const landingExtra = document.getElementById('landing-extra');
-    if (landingExtra) {
-        landingExtra.style.display = 'block';
-    }
-
-    // 4. Scroll ke atas
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-    </script>
+</script>
 </body>
 </html>
